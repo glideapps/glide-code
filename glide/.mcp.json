@@ -1,0 +1,6 @@
+{
+  "glide-browser": {
+    "command": "npx",
+    "args": ["@playwright/mcp@latest"]
+  }
+}
