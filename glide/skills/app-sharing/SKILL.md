@@ -1,12 +1,12 @@
 ---
-name: access-management
+name: app-sharing
 description: |
   Manage Glide app access, privacy, authentication, and publishing.
   Use when configuring who can access an app, setting up sign-in methods,
   publishing apps, inviting users, or configuring Row Owners for data security.
 ---
 
-# Glide Access Management
+# Glide App Sharing
 
 ## Accessing Access Settings
 

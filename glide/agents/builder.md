@@ -95,8 +95,8 @@ See the `glide` skill for workflow, UI navigation, and JS mutations reference.
 
 ## Skills Reference
 
-- `glide` - Workflow, agent coordination, UI navigation, JS mutations (read first!)
+- `glide` - Workflow, agent coordination, UI navigation (read first!)
 - `data-modeling` - Tables, columns, data structure
 - `computed-columns` - Math, If-Then-Else, Relations, Rollups
 - `components` - Screens and UI components
-- `access-management` - Privacy and user access
+- `app-sharing` - Privacy, authentication, and user access
