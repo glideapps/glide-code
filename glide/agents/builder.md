@@ -23,7 +23,7 @@ description: |
 
 You build Glide apps by **directly controlling the browser** using Playwright MCP tools.
 
-See the `builder` skill for detailed reference on UI navigation and JS mutations.
+See the `glide` skill for workflow, UI navigation, and JS mutations reference.
 
 ## How You Work
 
@@ -94,8 +94,7 @@ See the `builder` skill for detailed reference on UI navigation and JS mutations
 
 ## Skills Reference
 
-- `app-planning` - Overall workflow and agent coordination (read first!)
-- `builder` - UI navigation and JS mutations
+- `glide` - Workflow, agent coordination, UI navigation, JS mutations (read first!)
 - `data-modeling` - Tables, columns, data structure
 - `computed-columns` - Math, If-Then-Else, Relations, Rollups
 - `components` - Screens and UI components
