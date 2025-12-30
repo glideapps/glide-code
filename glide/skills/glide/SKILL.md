@@ -29,6 +29,7 @@ description: |
 | `data` | Glide API operations | Creating tables, importing data, bulk operations |
 | `design` | Review and improve screens | After basic screens are built |
 | `qa` | Verify features actually work | Before telling user the app is ready |
+| `app-research` | Explore and document existing apps | Understanding an app's structure, answering questions about it |
 
 ## Parallelization
 

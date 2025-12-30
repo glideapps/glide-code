@@ -53,6 +53,7 @@ The file-analysis agent returns:
 - **data**: Creates tables and imports data via Glide API
 - **design**: Reviews screens after building, suggests improvements to layout/components/data density
 - **qa**: Verifies features actually work before telling user the app is ready
+- **app-research**: Explores existing apps to document structure, features, and data model (comprehensive or focused)
 
 ## Key Rules
 
