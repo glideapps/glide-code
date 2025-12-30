@@ -186,10 +186,22 @@ The dropdown is searchable - type to filter.
 
 ## Layout Editor
 
-### Adding Screens
+### Adding Screens/Tabs
 1. Click "+" in Navigation or Menu section
 2. Choose: **Screen from data**, **Custom screen**, or **Form screen**
 3. Configure in right panel
+4. **Set an appropriate tab icon** - click the icon next to the tab name and choose one that matches the content
+
+**Tab icons matter** - don't leave random icons. Choose icons that represent the screen's purpose:
+- Tasks/Todos: checkmark, clipboard, list
+- People/Users: person, people, user
+- Settings: gear, cog, sliders
+- Home/Dashboard: home, grid, chart
+- Messages: chat, envelope, bell
+- Calendar/Events: calendar, clock
+- Files/Documents: folder, document, file
+- Search: magnifying glass
+- Add/Create: plus, add
 
 ### Adding Components
 1. Select a screen
