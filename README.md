@@ -13,20 +13,19 @@ This is a **Claude Code plugin** that extends Claude Code with specialized capab
 
 ## Installation
 
-> **Note**: This is a private repository. Installation requires local access to the code.
+### Option 1: Install from GitHub (Recommended)
 
-### For Team Members
+```bash
+claude --plugin-repo glideapps/glide-claude-code
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone git@github.com:glideapps/glide-claude-code.git
-   cd glide-claude-code
-   ```
-   (Use SSH if you have keys set up, or HTTPS with a personal access token)
+This downloads and installs the plugin directly from the GitHub repository.
 
-2. **Choose your installation method** (pick one):
+### Local Installation Options
 
-### Option A: Use Local Directory (Recommended for Active Development)
+For local development or if you don't have direct repository access:
+
+#### Option A: Use Local Directory (For Active Development)
 
 ```bash
 claude --plugin-dir /path/to/glide-claude-code/glide
