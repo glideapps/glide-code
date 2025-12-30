@@ -1,11 +1,11 @@
 ---
-name: components
+name: layout
 description: |
   Glide screens, UI components, layouts, forms, and actions in the Layout Editor.
   Use when creating screens, adding components (Hero, Fields, Buttons), building forms, or configuring navigation.
 ---
 
-# Glide Components
+# Glide Layout
 
 ## Screen Types
 
