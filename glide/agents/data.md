@@ -45,12 +45,30 @@ You are an expert at managing Glide data programmatically using the Glide API v2
 
 **When building a new app, ALWAYS create fresh tables. Never insert data into existing tables.**
 
-- The API dialog in Glide shows examples using the currently selected table's ID
-- **Do NOT use those table IDs** - they're just examples for that specific table
+### The Users Table is SPECIAL - NEVER Import Into It
+
+The **Users** table is reserved for user profiles and authentication. It should ONLY contain:
+- User email addresses
+- User names
+- Profile photos
+- User-specific settings
+
+**NEVER import operational data into the Users table.** If you're importing products, orders, inventory, tasks, or any business data, it MUST go into a NEW table.
+
+### API vs UI Import
+
+- The API dialog shows examples using the currently selected table's ID
+- **Do NOT use those table IDs** - they're just examples
 - When creating a new app, use `POST /tables` to create NEW tables first
 - Only use existing table IDs if explicitly asked to update an existing table
 
-**Dangerous mistake**: Inserting rows into an existing "Users" table or other system table instead of creating a new table for your app data.
+### UI Import Pitfalls
+
+If using the Glide UI to import:
+- **WRONG**: The "Import" link next to a table name imports INTO that table
+- **RIGHT**: The "+" button in Data Sources section creates a NEW table
+
+Never click the inline import link near an existing table - it will inject data into that table. Always use the "+" menu to create new tables.
 
 ## CRITICAL: Avoid Creating Duplicate Tables
 

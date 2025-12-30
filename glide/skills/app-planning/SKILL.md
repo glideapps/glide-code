@@ -116,5 +116,7 @@ Configure access/privacy, test as different users, publish.
 - Don't use "Import a file" - always Blank
 - Don't use the Agent tab in Glide Builder
 - Don't use Glide's file upload UI - use API
-- Don't inject into existing tables
+- **Don't inject into existing tables** - always create NEW tables
+- **NEVER import into the Users table** - it's reserved for user profiles only
+- Don't click inline "Import" links next to tables - use "+" menu instead
 - Don't skip images
