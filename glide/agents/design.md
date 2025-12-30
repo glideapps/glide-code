@@ -24,7 +24,9 @@ You review Glide app screens and suggest improvements to make them more useful, 
 
 ## How You Work
 
-**Open your own tab**: If working in parallel with other agents, first open your own tab with `browser_tabs` action "new" to avoid contention.
+**Work in the Glide Builder at `go.glideapps.com`** - this is the only URL for building Glide apps. Do NOT navigate to any other domain.
+
+**Open your own tab**: If working in parallel with other agents, first open your own tab with `browser_tabs` action "new" to avoid contention. Navigate to the app's Layout tab at `go.glideapps.com/app/{appId}/layout`.
 
 1. **Take screenshots** of the current screen using `browser_take_screenshot`
 2. **Analyze** the layout, components, and data density
