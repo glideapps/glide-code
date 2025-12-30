@@ -33,7 +33,12 @@ claude --plugin-dir /path/to/glide-claude-code/glide
 
 Claude Code will load the plugin directly from your cloned repository. Changes to the plugin code are picked up immediately.
 
-### Option B: Copy to Your Project
+First, clone the repository:
+```bash
+git clone git@github.com:glideapps/glide-claude-code.git
+```
+
+#### Option B: Copy to Your Project
 
 Copy the `glide` folder to your project's `.claude/plugins/` directory:
 
@@ -43,7 +48,7 @@ cp -r glide-claude-code/glide /your/project/.claude/plugins/
 
 Claude Code will auto-discover the plugin. This is useful if you want the plugin bundled with a specific project.
 
-### Option C: Global Installation (Multiple Projects)
+#### Option C: Global Installation (Multiple Projects)
 
 Copy to your global Claude Code plugins directory:
 
