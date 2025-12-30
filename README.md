@@ -13,23 +13,28 @@ This is a **Claude Code plugin** that extends Claude Code with specialized capab
 
 ## Installation
 
-### Option 1: Install from GitHub (Recommended)
+> **Note**: This is a private repository. Installation requires local access to the code.
 
-```bash
-claude --plugin-repo glideapps/glide-claude-code
-```
+### For Team Members
 
-This downloads and installs the plugin directly from the GitHub repository.
+1. **Clone the repository**:
+   ```bash
+   git clone git@github.com:glideapps/glide-claude-code.git
+   cd glide-claude-code
+   ```
+   (Use SSH if you have keys set up, or HTTPS with a personal access token)
 
-### Option 2: Install from Local Directory
+2. **Choose your installation method** (pick one):
+
+### Option A: Use Local Directory (Recommended for Active Development)
 
 ```bash
 claude --plugin-dir /path/to/glide-claude-code/glide
 ```
 
-Useful during development or if you want to modify the plugin locally.
+Claude Code will load the plugin directly from your cloned repository. Changes to the plugin code are picked up immediately.
 
-### Option 3: Copy to Your Project
+### Option B: Copy to Your Project
 
 Copy the `glide` folder to your project's `.claude/plugins/` directory:
 
@@ -37,7 +42,18 @@ Copy the `glide` folder to your project's `.claude/plugins/` directory:
 cp -r glide-claude-code/glide /your/project/.claude/plugins/
 ```
 
-Claude Code will auto-discover the plugin.
+Claude Code will auto-discover the plugin. This is useful if you want the plugin bundled with a specific project.
+
+### Option C: Global Installation (Multiple Projects)
+
+Copy to your global Claude Code plugins directory:
+
+```bash
+mkdir -p ~/.claude/plugins
+cp -r glide-claude-code/glide ~/.claude/plugins/
+```
+
+The plugin will be available to all Claude Code sessions.
 
 ## How to Use
 
@@ -116,14 +132,11 @@ See the full documentation in the `glide/` folder:
 ✅ Manage access control and authentication
 ✅ Review and optimize app designs
 
-## Repository
+## Support
 
-- **GitHub**: [glideapps/glide-claude-code](https://github.com/glideapps/glide-claude-code)
-- **Issue Tracking**: [GitHub Issues](https://github.com/glideapps/glide-claude-code/issues)
-
-## Contributing
-
-This is a private Glide team repository. For issues or contributions, please contact the Glide team.
+This is a private repository for Glide team use. For issues, questions, or contributions:
+- Create an issue in the private GitHub repository
+- Contact the Glide team for access or troubleshooting
 
 ## License
 
