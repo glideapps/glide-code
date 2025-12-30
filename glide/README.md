@@ -15,11 +15,18 @@ Build complete apps in Glide Builder (go.glideapps.com) using Claude Code with b
 
 ## Installation
 
+### Option 1: From GitHub Repository
+```bash
+claude --plugin-repo glideapps/glide-claude-code
+```
+
+### Option 2: From Local Directory
 ```bash
 claude --plugin-dir /path/to/glide
 ```
 
-Or copy to your project's `.claude/plugins/` directory.
+### Option 3: Copy to Project
+Copy the `glide` directory to your project's `.claude/plugins/` directory and Claude Code will auto-discover it.
 
 ## Browser Setup
 
