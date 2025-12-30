@@ -17,7 +17,8 @@ description: |
 4. **Create tables via API** - Use `data` agent (faster than UI)
 5. **Build screens** - Use `builder` agent for Playwright automation
 6. **Design review** - Use `design` agent to improve screens
-7. **Finalize** - Access settings, testing, publish
+7. **QA verification** - Use `qa` agent to verify features actually work
+8. **Finalize** - Access settings, testing, publish
 
 ## Agents
 
@@ -27,6 +28,7 @@ description: |
 | `file-analysis` | Analyze spreadsheets/data files | User provides a file to build from |
 | `data` | Glide API operations | Creating tables, importing data, bulk operations |
 | `design` | Review and improve screens | After basic screens are built |
+| `qa` | Verify features actually work | Before telling user the app is ready |
 
 ## Parallelization
 
@@ -94,7 +96,21 @@ Use `design` agent after basic screens exist. It will:
 
 Then use `builder` to implement improvements.
 
-### 7. Finalize
+### 7. QA Verification (Critical!)
+
+**Don't tell the user the app is ready until you verify features actually work.**
+
+Use `qa` agent to:
+- Verify screens exist and have components (not empty)
+- Verify data binding works (real data shows, not placeholders)
+- Test forms actually save data (check Data Editor)
+- Test buttons/actions actually work
+- Verify computed columns have formulas configured
+- Check that workflows are set up correctly
+
+The QA agent will produce a report of PASS/FAIL for each feature. Fix any failures before declaring the app complete.
+
+### 8. Finalize
 
 Configure access/privacy, test as different users, publish.
 

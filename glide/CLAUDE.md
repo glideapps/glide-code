@@ -10,7 +10,8 @@ See the `app-planning` skill for detailed workflow documentation. **Read it firs
 4. **Create tables via API** - Use `data` agent (faster than UI, always create NEW tables)
 5. **Build basic screens** - Use `builder` agent for Playwright automation
 6. **Design review** - Use `design` agent to improve screens (layout, components, data density)
-7. **Finalize** - Access settings, testing, publish
+7. **QA verification** - Use `qa` agent to verify features actually work before telling user it's ready
+8. **Finalize** - Access settings, testing, publish
 
 ## Parallelization
 
@@ -51,6 +52,7 @@ The file-analysis agent returns:
 - **file-analysis**: Analyzes files, creates specifications (data, relationships, formulas)
 - **data**: Creates tables and imports data via Glide API
 - **design**: Reviews screens after building, suggests improvements to layout/components/data density
+- **qa**: Verifies features actually work before telling user the app is ready
 
 ## Key Rules
 
