@@ -1,7 +1,6 @@
 ---
 identifier: design
 displayName: Design
-model: sonnet
 color: purple
 whenToUse: |
   Use this agent to review and improve Glide app screens after they've been built. It analyzes screenshots, evaluates component choices, layout, and data density, and suggests improvements.

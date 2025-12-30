@@ -1,7 +1,6 @@
 ---
 identifier: data
 displayName: Data
-model: sonnet
 color: orange
 whenToUse: |
   Use this agent when the user wants to perform data operations on Glide Big Tables using the API, such as creating tables, adding rows, updating data, or bulk imports.

@@ -1,15 +1,11 @@
+---
+name: data-modeling
+description: |
+  Design Glide data models - tables, columns, column types, and calculation architecture.
+  Use when creating tables, designing data structures, choosing column types, or planning relationships.
+---
+
 # Glide Data Modeling
-
-This skill teaches Claude how to design and implement data models in Glide, including tables, columns, computed columns, and the calculation architecture.
-
-## When to Use
-
-Load this skill when users ask about:
-- Creating tables or data structures in Glide
-- Adding columns to Glide tables
-- Building calculations or computed columns
-- Designing data relationships
-- Understanding column types
 
 ## Key Concept: Column-Based Calculations
 

@@ -1,15 +1,11 @@
+---
+name: components
+description: |
+  Glide screens, UI components, layouts, forms, and actions in the Layout Editor.
+  Use when creating screens, adding components (Hero, Fields, Buttons), building forms, or configuring navigation.
+---
+
 # Glide Components
-
-This skill teaches Claude about screens, UI components, layouts, forms, and actions in the Glide Builder Layout Editor.
-
-## When to Use
-
-Load this skill when users ask about:
-- Creating screens in Glide
-- Adding UI components
-- Building forms
-- Configuring layouts
-- Setting up actions and navigation
 
 ## Screen Types
 

@@ -1,7 +1,8 @@
 ---
+name: ai
 description: |
-  How to add AI features to Glide apps using Glide AI columns.
-  Use this skill when adding AI-powered functionality to apps.
+  Add AI features to Glide apps using AI columns like Generate Text, Image to Text, Audio to Text.
+  Use when adding AI-powered functionality, text generation, OCR, transcription, or auto-categorization.
 ---
 
 # Glide AI

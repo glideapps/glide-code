@@ -1,15 +1,11 @@
+---
+name: api
+description: |
+  Use the Glide API for programmatic data operations - REST API v2 and @glideapps/tables npm package.
+  Use when importing data, bulk operations, automating data sync, or building integrations with Glide tables.
+---
+
 # Glide API
-
-This skill teaches Claude how to use the Glide API for programmatic data operations, including both the REST API v2 and the @glideapps/tables npm package.
-
-## When to Use
-
-Load this skill when users ask about:
-- Using the Glide API
-- Programmatic data operations
-- Bulk data import/export
-- Automating Glide data operations
-- Using @glideapps/tables package
 
 ## API Overview
 

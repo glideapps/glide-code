@@ -1,15 +1,12 @@
+---
+name: access-management
+description: |
+  Manage Glide app access, privacy, authentication, and publishing.
+  Use when configuring who can access an app, setting up sign-in methods,
+  publishing apps, inviting users, or configuring Row Owners for data security.
+---
+
 # Glide Access Management
-
-This skill teaches Claude how to manage app access, privacy settings, user authentication, and publishing in Glide Builder.
-
-## When to Use
-
-Load this skill when users ask about:
-- Publishing a Glide app
-- Inviting users to an app
-- Configuring privacy settings
-- Setting up authentication methods
-- Managing app access
 
 ## Accessing Access Settings
 

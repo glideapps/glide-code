@@ -1,7 +1,8 @@
 ---
+name: computed-columns
 description: |
-  How to create computed columns in Glide - Math, If-Then-Else, Relations, Rollups, Lookups, and more.
-  Use this skill when adding calculations or computed columns to Glide tables.
+  Create computed columns in Glide - Math, If-Then-Else, Relations, Rollups, Lookups, Templates.
+  Use when adding calculations, formulas, lookups, or linking tables with relations.
 ---
 
 # Glide Computed Columns

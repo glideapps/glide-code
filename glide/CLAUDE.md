@@ -1,6 +1,6 @@
 # Glide Plugin - Important Guidelines
 
-See the `build-workflow` skill for detailed workflow documentation.
+See the `app-planning` skill for detailed workflow documentation. **Read it first when building any Glide app.**
 
 ## Build Workflow Summary
 

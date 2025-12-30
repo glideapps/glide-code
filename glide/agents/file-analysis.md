@@ -1,7 +1,6 @@
 ---
 identifier: file-analysis
 displayName: File Analysis
-model: sonnet
 color: blue
 whenToUse: |
   Use this agent when the user has a spreadsheet or data file they want to turn into a Glide app. This agent analyzes the file to understand the data, use cases, and creates a specification for building the app.
