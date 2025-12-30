@@ -10,16 +10,28 @@ description: |
 
 Glide Builder uses Redux for state management. By accessing the Redux store directly, we can dispatch actions to modify apps instantly without navigating through the UI.
 
-**When to use this technique:**
+**What CAN be mutated via JavaScript (Redux):**
+- App settings (title, description, icon)
+- Screens and their configurations
+- Components and their properties
+- Tabs and navigation
+- Theme and branding
+
+**What CANNOT be mutated via JavaScript:**
+- **Tables and columns** - These use Firebase Cloud Functions, not Redux
+- Data rows - Handled via different data layer APIs
+
+**When to use JS mutations:**
 - Changing app settings (title, description, icon)
 - Bulk operations that would require many UI clicks
 - When the UI is slow or unresponsive
 - For operations where we know the exact data structure
 
-**When NOT to use this:**
+**When NOT to use JS mutations:**
 - Complex operations where UI feedback is helpful
 - When you need to see visual results immediately
 - Operations that require selecting from dynamic lists (like linking tables)
+- **Creating tables or columns** - use UI automation or API instead
 
 ## Setup: Inject the Helper
 
