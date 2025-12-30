@@ -51,14 +51,14 @@ Your login will be remembered for future sessions (stored in `~/Library/Caches/m
 
 | Skill | Description |
 |-------|-------------|
-| `glide-build-workflow` | Overall workflow, agent coordination, key patterns |
-| `glide-builder-navigation` | Builder UI navigation, shortcuts, and patterns |
-| `glide-data-modeling` | Tables, columns, shared tables, data structure |
-| `glide-computed-columns` | Math, If-Then-Else, Relations, Rollups, Lookups |
-| `glide-ai` | AI columns, summaries, auto-categorization, document scanning |
-| `glide-components` | Screens, UI components, layouts, forms, actions |
-| `glide-api` | Using Glide API v2 and @glideapps/tables for data operations |
-| `glide-access-management` | Privacy settings, authentication, publishing, user access |
+| `build-workflow` | Overall workflow, agent coordination, key patterns |
+| `builder-navigation` | Builder UI navigation, shortcuts, and patterns |
+| `data-modeling` | Tables, columns, shared tables, data structure |
+| `computed-columns` | Math, If-Then-Else, Relations, Rollups, Lookups |
+| `ai` | AI columns, summaries, auto-categorization, document scanning |
+| `components` | Screens, UI components, layouts, forms, actions |
+| `api` | Using Glide API v2 and @glideapps/tables for data operations |
+| `access-management` | Privacy settings, authentication, publishing, user access |
 
 ## Agents
 

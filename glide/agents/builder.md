@@ -169,7 +169,7 @@ Match the preview to how users will actually use the app.
 
 For simple settings changes, you can bypass the UI entirely by dispatching Redux actions directly via `browser_evaluate`. This is much faster for bulk operations.
 
-See the `glide-js-mutations` skill for details. Quick example:
+See the `js-mutations` skill for details. Quick example:
 
 ```javascript
 // Change app title instantly (no UI navigation needed)
@@ -189,7 +189,7 @@ See the `glide-js-mutations` skill for details. Quick example:
 - Linking Big Tables (needs table browser)
 - Complex operations requiring visual feedback
 
-**Note**: You must first inject the `glideMutate` helper (see `glide-js-mutations` skill).
+**Note**: You must first inject the `glideMutate` helper (see `js-mutations` skill).
 
 ## Key Rules
 
@@ -203,10 +203,10 @@ See the `glide-js-mutations` skill for details. Quick example:
 ## Skills Reference
 
 For detailed information:
-- `glide-build-workflow` - Overall workflow and agent coordination
-- `glide-builder-navigation` - UI navigation and shortcuts
-- `glide-data-modeling` - Tables, columns, data structure
-- `glide-computed-columns` - Math, If-Then-Else, Relations, Rollups, Lookups
-- `glide-components` - Screens and UI components
-- `glide-access-management` - Privacy and user access
-- `glide-js-mutations` - Fast app modifications via direct JavaScript
+- `build-workflow` - Overall workflow and agent coordination
+- `builder-navigation` - UI navigation and shortcuts
+- `data-modeling` - Tables, columns, data structure
+- `computed-columns` - Math, If-Then-Else, Relations, Rollups, Lookups
+- `components` - Screens and UI components
+- `access-management` - Privacy and user access
+- `js-mutations` - Fast app modifications via direct JavaScript

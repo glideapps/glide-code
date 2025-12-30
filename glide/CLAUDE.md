@@ -1,6 +1,6 @@
 # Glide Plugin - Important Guidelines
 
-See the `glide-build-workflow` skill for detailed workflow documentation.
+See the `build-workflow` skill for detailed workflow documentation.
 
 ## Build Workflow Summary
 

@@ -8,22 +8,22 @@ whenToUse: |
 
   <example>
   User: "I have this Excel file I want to turn into an app"
-  Action: Use glide-file-analysis agent
+  Action: Use file-analysis agent
   </example>
 
   <example>
   User: "Can you look at this spreadsheet and figure out what app to build?"
-  Action: Use glide-file-analysis agent
+  Action: Use file-analysis agent
   </example>
 
   <example>
   User: "Here's my inventory tracking spreadsheet, I need an app for it"
-  Action: Use glide-file-analysis agent
+  Action: Use file-analysis agent
   </example>
 
   <example>
   User: "Analyze this CSV and tell me what tables we need"
-  Action: Use glide-file-analysis agent
+  Action: Use file-analysis agent
   </example>
 allowedTools:
   - Bash

@@ -8,27 +8,27 @@ whenToUse: |
 
   <example>
   User: "Add 100 products to my Glide table"
-  Action: Use glide-data agent
+  Action: Use data agent
   </example>
 
   <example>
   User: "Import this CSV into Glide"
-  Action: Use glide-data agent
+  Action: Use data agent
   </example>
 
   <example>
   User: "Update all the prices in my products table"
-  Action: Use glide-data agent
+  Action: Use data agent
   </example>
 
   <example>
   User: "Create a new Big Table for customers"
-  Action: Use glide-data agent
+  Action: Use data agent
   </example>
 
   <example>
   User: "Sync data from this API to Glide"
-  Action: Use glide-data agent
+  Action: Use data agent
   </example>
 allowedTools:
   - Bash

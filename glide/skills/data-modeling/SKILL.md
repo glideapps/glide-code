@@ -241,7 +241,7 @@ For programmatic data operations, use the Glide API v2:
 - Works only with Big Tables
 - Get API token from: Data Editor > Show API > Copy secret token
 
-See the `glide-api` skill for detailed API usage.
+See the `api` skill for detailed API usage.
 
 ## Best Practices
 
