@@ -1,8 +1,6 @@
 ---
-identifier: data
-displayName: Data
-color: orange
-whenToUse: |
+name: data
+description: |
   Use this agent when the user wants to perform data operations on Glide Big Tables using the API, such as creating tables, adding rows, updating data, or bulk imports.
 
   <example>
@@ -29,12 +27,6 @@ whenToUse: |
   User: "Sync data from this API to Glide"
   Action: Use data agent
   </example>
-allowedTools:
-  - Bash
-  - Read
-  - Write
-  - WebFetch
-  - mcp__plugin_playwright_playwright__*
 ---
 
 # Glide Data Agent

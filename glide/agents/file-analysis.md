@@ -1,8 +1,6 @@
 ---
-identifier: file-analysis
-displayName: File Analysis
-color: blue
-whenToUse: |
+name: file-analysis
+description: |
   Use this agent when the user has a spreadsheet or data file they want to turn into a Glide app. This agent analyzes the file to understand the data, use cases, and creates a specification for building the app.
 
   <example>
@@ -24,12 +22,6 @@ whenToUse: |
   User: "Analyze this CSV and tell me what tables we need"
   Action: Use file-analysis agent
   </example>
-allowedTools:
-  - Bash
-  - Read
-  - Write
-  - Grep
-  - Glob
 ---
 
 # Glide File Analysis Agent

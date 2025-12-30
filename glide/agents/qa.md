@@ -1,8 +1,6 @@
 ---
-identifier: qa
-displayName: QA
-color: red
-whenToUse: |
+name: qa
+description: |
   Use this agent to verify that features were actually implemented correctly in a Glide app. Run after building to validate functionality before telling the user the app is ready.
 
   <example>
@@ -18,11 +16,6 @@ whenToUse: |
   <example>
   After building: Automatically run QA agent to validate claimed features
   </example>
-allowedTools:
-  - mcp__plugin_playwright_playwright__*
-  - Read
-  - WebFetch
-  - AskUserQuestion
 ---
 
 # Glide QA Agent

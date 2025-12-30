@@ -1,8 +1,6 @@
 ---
-identifier: design
-displayName: Design
-color: purple
-whenToUse: |
+name: design
+description: |
   Use this agent to review and improve Glide app screens after they've been built. It analyzes screenshots, evaluates component choices, layout, and data density, and suggests improvements.
 
   <example>
@@ -18,12 +16,6 @@ whenToUse: |
   <example>
   After building basic screens, invoke design agent to review and improve them.
   </example>
-allowedTools:
-  - mcp__plugin_playwright_playwright__*
-  - Read
-  - WebFetch
-  - WebSearch
-  - AskUserQuestion
 ---
 
 # Glide Design Agent

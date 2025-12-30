@@ -1,8 +1,6 @@
 ---
-identifier: builder
-displayName: Builder
-color: green
-whenToUse: |
+name: builder
+description: |
   Use this agent when the user wants to build, create, or modify a Glide app using browser automation.
 
   <example>
@@ -19,13 +17,6 @@ whenToUse: |
   User: "Help me add a new screen to my Glide app"
   Action: Use builder agent
   </example>
-allowedTools:
-  - mcp__glide-browser__*
-  - mcp__plugin_playwright_playwright__*
-  - Read
-  - WebFetch
-  - WebSearch
-  - AskUserQuestion
 ---
 
 # Glide App Builder Agent
