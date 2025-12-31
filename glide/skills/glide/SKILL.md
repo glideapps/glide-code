@@ -232,6 +232,28 @@ Card, List, Table, Data Grid, Checklist, Calendar, Kanban, Custom
 **Access** - Who can access the app
 **Integrations** - External connections
 
+### Changing App Icon (Emoji Picker)
+
+To change the app icon using the emoji picker:
+
+1. Go to **Settings** tab → **Name & Icon** section
+2. **Click the icon image** (not the Upload button) → Opens "Emoji Mart™" picker
+3. **Type the emoji name in the search box** (e.g., "rocket", "checkmark", "clipboard")
+4. **Click the emoji button** from the search results
+
+**Important**: Always use the search box! Browsing categories is slow and error-prone. The search instantly filters to matching emojis.
+
+Common emoji searches for app icons:
+- Tasks: "checkmark", "clipboard", "list"
+- People: "person", "people", "user"
+- Business: "briefcase", "chart", "money"
+- Home: "home", "house"
+- Settings: "gear", "wrench"
+- Calendar: "calendar", "clock"
+- Messages: "chat", "envelope", "bell"
+- Food: "pizza", "coffee", "burger"
+- Travel: "car", "plane", "rocket"
+
 ---
 
 ## Browser Automation Tips

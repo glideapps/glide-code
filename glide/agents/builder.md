@@ -61,6 +61,14 @@ See the `glide` skill for workflow, UI navigation, and JS mutations reference.
    - Good: "Employees", "Task Tracker"
    - Bad: "Tesla Employee Directory", "Acme Tasks."
 
+**Changing App Icon (Emoji Picker)**
+1. Settings tab → Name & Icon section
+2. **Click the icon image** (not Upload button) → Opens emoji picker
+3. **Type emoji name in search box** (e.g., "rocket", "checkmark", "briefcase")
+4. **Click the emoji** from search results
+
+Always use search - never browse categories!
+
 **Adding Columns**
 1. Click column header → "Add column right"
 2. Type name
