@@ -1,7 +1,7 @@
 ---
 name: glide
 description: |
-  **The primary skill for building Glide apps.** Covers the full workflow, agent coordination, browser automation, and JavaScript mutations.
+  **The primary skill for building Glide apps.** Covers the full workflow, agent coordination, and browser automation.
   Use when building, creating, or modifying any Glide app. Read this first for any Glide project.
 ---
 
