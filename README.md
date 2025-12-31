@@ -79,18 +79,18 @@ Claude will use the appropriate agents and skills to help you build and manage y
 - **data** - Manages data operations via the Glide API
 - **file-analysis** - Analyzes spreadsheets and data files
 - **design** - Reviews and improves app designs
+- **app-research** - Explores and documents existing Glide apps
+- **qa** - Verifies that features were actually implemented correctly
 
 ### Skills
 
-- **build-workflow** - Overall workflow and agent coordination
-- **builder-navigation** - UI navigation patterns and shortcuts
+- **glide** - Primary skill for building apps: workflow, agent coordination, browser automation
 - **data-modeling** - Tables, columns, relationships, and calculations
 - **computed-columns** - Advanced computed column types
 - **ai** - AI columns and AI-powered features
-- **components** - Screens, layouts, and UI components
+- **layout** - Screens, UI components, layouts, forms, and actions
 - **api** - Glide API v2 usage and data operations
-- **access-management** - Privacy settings and authentication
-- **js-mutations** - Fast direct app modifications via JavaScript
+- **app-sharing** - Access, privacy, authentication, and publishing
 
 ## Prerequisites
 
@@ -144,4 +144,4 @@ This is a private repository for Glide team use. For issues, questions, or contr
 
 ## License
 
-Copyright © 2024 Glide. All rights reserved.
+Copyright © 2025 Glide. All rights reserved.
