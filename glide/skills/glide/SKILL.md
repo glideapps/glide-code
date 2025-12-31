@@ -198,9 +198,14 @@ The dropdown is searchable - type to filter.
 1. Click "+" in Navigation or Menu section
 2. Choose: **Screen from data**, **Custom screen**, or **Form screen**
 3. Configure in right panel
-4. **Set an appropriate tab icon** - click the icon next to the tab name and choose one that matches the content
+4. **Set a short label** - 1-2 words maximum (e.g., "Tasks", "My Team")
+5. **Pick an appropriate icon** - click the icon and choose one that matches the content
 
-**Tab icons matter** - don't leave random icons. Choose icons that represent the screen's purpose:
+**Tab labels**: Keep them short! 1-2 words max.
+- Good: "Tasks", "Team", "Settings", "Orders"
+- Bad: "My Task List", "Team Member Directory"
+
+**Tab icons**: Don't leave random icons. Choose icons that represent the screen's purpose:
 - Tasks/Todos: checkmark, clipboard, list
 - People/Users: person, people, user
 - Settings: gear, cog, sliders

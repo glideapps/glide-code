@@ -70,7 +70,8 @@ See the `glide` skill for workflow, UI navigation, and JS mutations reference.
 **Adding Screens/Tabs**
 1. Layout tab → Click "+" in Navigation section
 2. Choose: Screen from data, Custom screen, or Form screen
-3. **Set an appropriate tab icon** - click the icon and choose one that matches the content (e.g., checkmark for tasks, person for users, gear for settings)
+3. **Set a short label** - 1-2 words max (e.g., "Tasks", "Team", not "My Task List")
+4. **Pick an appropriate icon** - click the icon and choose one that matches the content (e.g., checkmark for tasks, person for users, gear for settings)
 
 **Linking Big Tables**
 1. Data Editor → Click team name in Data Sources
