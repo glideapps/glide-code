@@ -73,14 +73,16 @@ curl -X GET "https://api.glideapps.com/tables/TABLE_ID/rows" \
 
 ### Example: Add Rows
 
+**Use column IDs (not display names) as keys.** Column IDs are defined in the schema when creating the table.
+
 ```bash
 curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "rows": [
-      {"Name": "Alice", "Email": "alice@example.com"},
-      {"Name": "Bob", "Email": "bob@example.com"}
+      {"name": "Alice", "email": "alice@example.com"},
+      {"name": "Bob", "email": "bob@example.com"}
     ]
   }'
 ```
@@ -92,7 +94,7 @@ curl -X PATCH "https://api.glideapps.com/tables/TABLE_ID/rows/ROW_ID" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "Name": "Updated Name"
+    "name": "Updated Name"
   }'
 ```
 

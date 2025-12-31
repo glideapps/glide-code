@@ -136,22 +136,27 @@ Example table with images:
   "name": "Products",
   "schema": {
     "columns": [
-      {"name": "Name", "type": "string"},
-      {"name": "Image", "type": "uri"},
-      {"name": "Price", "type": "number"},
-      {"name": "Category", "type": "string"}
+      {"id": "name", "displayName": "Name", "type": "string"},
+      {"id": "image", "displayName": "Image", "type": "uri"},
+      {"id": "price", "displayName": "Price", "type": "number"},
+      {"id": "category", "displayName": "Category", "type": "string"}
     ]
   }
 }
 ```
 
-Example rows with placeholder images:
+**Schema format**: Each column needs:
+- `id`: Internal identifier (camelCase, used in row data)
+- `displayName`: What users see in the Builder
+- `type`: Data type (`string`, `number`, `uri`, `dateTime`, `boolean`)
+
+Example rows with placeholder images (use column IDs as keys):
 ```json
 {
   "rows": [
-    {"Name": "Product 1", "Image": "https://picsum.photos/seed/prod1/400/300", "Price": 29.99, "Category": "Electronics"},
-    {"Name": "Product 2", "Image": "https://picsum.photos/seed/prod2/400/300", "Price": 49.99, "Category": "Home"},
-    {"Name": "Product 3", "Image": "https://picsum.photos/seed/prod3/400/300", "Price": 19.99, "Category": "Office"}
+    {"name": "Product 1", "image": "https://picsum.photos/seed/prod1/400/300", "price": 29.99, "category": "Electronics"},
+    {"name": "Product 2", "image": "https://picsum.photos/seed/prod2/400/300", "price": 49.99, "category": "Home"},
+    {"name": "Product 3", "image": "https://picsum.photos/seed/prod3/400/300", "price": 19.99, "category": "Office"}
   ]
 }
 ```
@@ -183,10 +188,10 @@ curl -X POST "https://api.glideapps.com/tables" \
     "name": "Products",
     "schema": {
       "columns": [
-        {"name": "Name", "type": "string"},
-        {"name": "Image", "type": "uri"},
-        {"name": "Price", "type": "number"},
-        {"name": "Category", "type": "string"}
+        {"id": "name", "displayName": "Name", "type": "string"},
+        {"id": "image", "displayName": "Image", "type": "uri"},
+        {"id": "price", "displayName": "Price", "type": "number"},
+        {"id": "category", "displayName": "Category", "type": "string"}
       ]
     }
   }'
@@ -207,10 +212,10 @@ curl -X POST "https://api.glideapps.com/tables" \
     "appsToLink": ["APP_ID_HERE"],
     "schema": {
       "columns": [
-        {"name": "Name", "type": "string"},
-        {"name": "Image", "type": "uri"},
-        {"name": "Price", "type": "number"},
-        {"name": "Category", "type": "string"}
+        {"id": "name", "displayName": "Name", "type": "string"},
+        {"id": "image", "displayName": "Image", "type": "uri"},
+        {"id": "price", "displayName": "Price", "type": "number"},
+        {"id": "category", "displayName": "Category", "type": "string"}
       ]
     }
   }'
@@ -238,14 +243,16 @@ curl -X GET "https://api.glideapps.com/tables/TABLE_ID/rows" \
 ```
 
 ### Add Rows (Bulk)
+**Use column IDs (not display names) as keys in row data.**
+
 ```bash
 curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Authorization: Bearer $GLIDE_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "rows": [
-      {"Name": "Product 1", "Price": 29.99, "Category": "Electronics"},
-      {"Name": "Product 2", "Price": 49.99, "Category": "Home"}
+      {"name": "Product 1", "price": 29.99, "category": "Electronics"},
+      {"name": "Product 2", "price": 49.99, "category": "Home"}
     ]
   }'
 ```
@@ -255,7 +262,7 @@ curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
 curl -X PATCH "https://api.glideapps.com/tables/TABLE_ID/rows/ROW_ID" \
   -H "Authorization: Bearer $GLIDE_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"Price": 39.99}'
+  -d '{"price": 39.99}'
 ```
 
 ### Delete a Row
