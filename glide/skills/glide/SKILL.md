@@ -82,11 +82,18 @@ Use `data` agent - much faster than UI for bulk data.
 ### 5. Build Screens
 
 Use `builder` agent to:
-1. Set branding (name, icon, colors)
+1. Set branding (name, icon, colors) - see naming rules below
 2. Link tables created via API
 3. Add computed columns (relations, rollups, AI)
 4. Create screens from data
 5. Configure collections and detail views
+
+**App naming rules:**
+- **Short**: 2 words maximum
+- **No company name**: The app lives in the company's team already
+- **No punctuation**: No periods, exclamation marks, etc.
+- Good: "Employees", "Task Tracker", "Inventory"
+- Bad: "Tesla Employee Directory", "Acme Inc. Tasks."
 
 ### 6. Design Review
 
@@ -215,7 +222,7 @@ Card, List, Table, Data Grid, Checklist, Calendar, Kanban, Custom
 
 ## Settings
 
-**Name & Icon** - Title, icon, logo, description
+**Name & Icon** - App name (keep short, 2 words max, no company name), icon, logo
 **Appearance** - Accent color, layout (Left/Top), style (Light/Deep/Accent)
 **Access** - Who can access the app
 **Integrations** - External connections

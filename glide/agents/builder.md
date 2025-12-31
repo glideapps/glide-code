@@ -57,6 +57,9 @@ See the `glide` skill for workflow, UI navigation, and JS mutations reference.
 **Creating New App**
 1. Click "New app" → Select **"Blank"** (never "Import a file")
 2. Click "Create app"
+3. Set app name: **short (2 words max), no company name, no punctuation**
+   - Good: "Employees", "Task Tracker"
+   - Bad: "Tesla Employee Directory", "Acme Tasks."
 
 **Adding Columns**
 1. Click column header → "Add column right"
