@@ -194,6 +194,43 @@ curl -X POST "https://api.glideapps.com/tables" \
 
 The response will contain the new table's ID. Use THAT ID for adding rows.
 
+### Auto-Link Table to App (Important!)
+
+**Use `appsToLink` to automatically link the new table to an app.** This saves time - no need to manually link in the Builder UI.
+
+```bash
+curl -X POST "https://api.glideapps.com/tables" \
+  -H "Authorization: Bearer $GLIDE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Products abc",
+    "appsToLink": ["APP_ID_HERE"],
+    "schema": {
+      "columns": [
+        {"name": "Name", "type": "string"},
+        {"name": "Image", "type": "uri"},
+        {"name": "Price", "type": "number"},
+        {"name": "Category", "type": "string"}
+      ]
+    }
+  }'
+```
+
+**How to get the App ID**: Extract it from the app URL: `go.glideapps.com/app/{APP_ID}/...`
+
+The response includes `linkedAppIDs` confirming which apps were linked:
+```json
+{
+  "data": {
+    "tableID": "...",
+    "rowIDs": ["..."],
+    "linkedAppIDs": ["APP_ID_HERE"]
+  }
+}
+```
+
+**Always use `appsToLink`** when creating tables for an app - it eliminates the manual linking step in the Builder.
+
 ### Get Rows
 ```bash
 curl -X GET "https://api.glideapps.com/tables/TABLE_ID/rows" \
