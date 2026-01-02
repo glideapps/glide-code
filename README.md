@@ -43,6 +43,8 @@ You can also kick off a working session with an existing app:
 /glide:start do a design review on my Repairs app
 ```
 
+**Working on multiple apps:** You can work on many apps at the same time, but you should work on them in separate directories with separate instances of [Claude Code](https://docs.claude.com).
+
 ## Development
 
 ### Running Scripts
