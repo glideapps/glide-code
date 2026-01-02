@@ -6,7 +6,7 @@
   <img src="media/logo-light.png" alt="Glide Code" width="600" height="auto">
 </picture>
 
-## What is This?
+## What?
 
 Glide Code is a plugin for [Claude Code](https://docs.claude.com), which gives the world's most popular coding agent the ability to not only build apps and work in Glide, but to do so with many agents in parallel via browser automation and Glide's multiplayer support.
 
