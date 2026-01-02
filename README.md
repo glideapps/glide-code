@@ -24,7 +24,7 @@ In [Claude Code](https://docs.claude.com), run:
 
 ```
 /plugin marketplace add glideapps/glide-code
-/plugin install glide@glide-code
+/plugin install glide@glide
 ```
 
 ## How to Use
