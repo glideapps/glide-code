@@ -29,10 +29,10 @@ First, [install Claude Code](https://docs.claude.com) if you don't have it.
 
 ## How to Use
 
-Run the `/glide:start` command with what you want to build or work on:
+Run the `/glide` command with what you want to build or work on:
 
 ```
-/glide:start Build an app for managing repairs for our construction company. The data is in repairs.csv
+/glide Build an app for managing repairs for our construction company. The data is in repairs.csv
 ```
 
 This will open a browser window where you can sign in to Glide (first time only). Your session will be remembered for future use. Claude will use the appropriate agents to build your app.
@@ -40,7 +40,7 @@ This will open a browser window where you can sign in to Glide (first time only)
 You can also kick off a working session with an existing app:
 
 ```
-/glide:start do a design review on my Repairs app
+/glide do a design review on my Repairs app
 ```
 
 **Working on multiple apps:** You can work on many apps at the same time, but you should work on them in separate directories with separate instances of [Claude Code](https://docs.claude.com).
@@ -83,7 +83,7 @@ claude --plugin-dir /path/to/glide-code/glide
 
 | Command | Purpose |
 |---------|---------|
-| `/glide:start` | Guided setup - interactive login, choose app, select task |
+| `/glide` | Guided setup - interactive login, choose app, select task |
 | `/tip` | Provide expert guidance - plugin learns and updates skills |
 
 ## Agents
@@ -121,7 +121,7 @@ The plugin supports up to 6 parallel browser sessions, enabling multiple agents 
 - QA verification alongside fixes
 
 **How it works:**
-- Run `/glide:start` once to authenticate and copy profile to all browsers
+- Run `/glide` once to authenticate and copy profile to all browsers
 - Spawn agents with browser assignments: "Build Tasks screen using browser 1"
 
 ## Prerequisites
@@ -132,7 +132,7 @@ The plugin supports up to 6 parallel browser sessions, enabling multiple agents 
 ## First Time Setup
 
 1. Start [Claude Code](https://docs.claude.com) with the plugin installed
-2. Run `/glide:start` to begin setup
+2. Run `/glide` to begin setup
 3. Complete interactive login in the browser window
 4. Choose whether to create a new app or edit an existing one
 5. Select what you want to do (build screens, import data, etc.)

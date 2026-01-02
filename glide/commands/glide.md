@@ -1,5 +1,5 @@
 ---
-name: start
+name: glide
 description: Start working with Glide - includes interactive login, app selection, and task choice
 ---
 
