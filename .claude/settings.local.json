@@ -14,7 +14,8 @@
       "Bash(ffprobe:*)",
       "Bash(ffmpeg:*)",
       "Bash(git checkout:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(GIT_COMMITTER_NAME=\"David Siegel\" GIT_COMMITTER_EMAIL=\"djsiegel@gmail.com\" git commit:*)"
     ]
   },
   "enabledPlugins": {
