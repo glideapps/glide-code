@@ -1,9 +1,0 @@
-{
-  "name": "glide",
-  "version": "0.1.0",
-  "description": "Build complete apps in Glide Builder via browser automation and API integration",
-  "author": {
-    "name": "David Siegel",
-    "email": "david@glideapps.com"
-  }
-}

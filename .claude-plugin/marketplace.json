@@ -12,7 +12,8 @@
       "name": "glide",
       "source": "./glide",
       "description": "Build complete apps in Glide Builder via browser automation and API integration",
-      "version": "0.1.0"
+      "version": "0.1.0",
+      "strict": false
     }
   ]
 }
