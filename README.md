@@ -20,7 +20,7 @@ Clip from a 4hr session where Glide Code built 3 apps (sped up 40x):
 
 ## Installation
 
-In [Claude Code](https://docs.claude.com), run:
+First, [install Claude Code](https://docs.claude.com) if you don't have it.
 
 ```
 /plugin marketplace add glideapps/glide-code
@@ -29,15 +29,19 @@ In [Claude Code](https://docs.claude.com), run:
 
 ## How to Use
 
-First, [install Claude Code](https://docs.claude.com) if you don't have it.
-
-Run the `/glide:start` command with what you want to build:
+Run the `/glide:start` command with what you want to build or work on:
 
 ```
 /glide:start Build an app for managing repairs for our construction company. The data is in repairs.csv
 ```
 
 This will open a browser window where you can sign in to Glide (first time only). Your session will be remembered for future use. Claude will use the appropriate agents to build your app.
+
+You can also kick off a working session with an existing app:
+
+```
+/glide:start do a design review on my Repairs app
+```
 
 ## Development
 
