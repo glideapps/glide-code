@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(/Users/david/Developer/glide-code/scripts/logo)",
+      "Bash(/Users/david/Developer/glide-code/scripts/logo:*)",
+      "Bash(cat:*)",
+      "Bash(ffprobe:*)",
+      "Bash(ffmpeg:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "plugin-dev@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  }
+}

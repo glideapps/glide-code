@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "browser-1": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-1", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    },
+    "browser-2": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-2", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    },
+    "browser-3": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-3", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    },
+    "browser-4": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-4", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    },
+    "browser-5": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-5", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    },
+    "browser-6": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--user-data-dir", ".glide/browser-profile-6", "--grant-permissions", "clipboard-read", "clipboard-write"]
+    }
+  }
+}
