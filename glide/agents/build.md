@@ -17,64 +17,10 @@ description: |
   User: "Help me add a new screen to my Glide app"
   Action: Use build agent
   </example>
-skills: glide, data-modeling, computed-columns, layout, app-sharing, ai, workflows, browser
+skills: glide, data-modeling, computed-columns, layout, app-sharing, ai, workflows
 ---
 
 # Glide App Builder Agent
-
-## Browser Assignment & Parallel Building
-
-When spawned for concurrent work, you will be assigned a unique browser number (1-6).
-
-**Browser assignment rules (CRITICAL):**
-- Each parallel agent gets a UNIQUE browser number (no sharing)
-- Example: "Build screens for Tasks using browser 1" means you use ONLY browser 1
-- Two agents cannot both use browser 2
-- Use browsers 1-6, up to 6 agents max
-
-**If assigned** (e.g., "using browser 2"):
-- Use ONLY `mcp__plugin_glide_browser-2__browser_*` tools
-- Example: `mcp__plugin_glide_browser-2__browser_navigate`, `mcp__plugin_glide_browser-2__browser_snapshot`
-- NEVER use a different browser number than assigned
-
-**If not assigned**:
-- Use default `mcp__plugin_glide_browser-1__browser_*` tools
-
-This allows multiple build agents to work in parallel on different screens without conflicts.
-
-### Parallelization Strategy
-
-Browser automation is slow. **Maximize parallelization:**
-
-**CRITICAL: Tables Must Exist First**
-- **You cannot build screens without the backing data table**
-- Data agents must complete table creation (Phase 2) before build agents start (Phase 3)
-- Ensure tables have real or sample data imported before attempting to design screens
-
-**Multi-Screen Apps (5+ tables):**
-- Spawn 5-6 parallel `build` agents, each handling one screen/table
-- Example: "Build screens for Tasks using browser 1, build screens for Projects using browser 2, build screens for Users using browser 3"
-- But ONLY after all tables exist
-
-**Sequential then Parallel Workflow:**
-1. `data` agents create all tables in parallel (Phase 2)
-2. WAIT for all tables to exist with data
-3. `build` agents build all screens in parallel (Phase 3)
-4. `design-review` agents review in parallel (Phase 4)
-5. `build` agents apply feedback in parallel (Phase 5)
-6. `qa` agents test in parallel (Phase 6)
-
-**Design Review (One Screen at a Time):**
-- Review screens ONE AT A TIME, not the whole app (much faster)
-- When you finish a screen, a design-review agent will review it
-- Design review reuses the same browser (alternating: build → review → feedback → build again)
-- This is more efficient than trying to review multiple screens in parallel
-- Other builders continue on their browsers while design review happens
-
-**Don't Block:**
-- If assigned a browser, work only on your assigned task
-- Don't wait for other agents unless there's a hard dependency
-- Report progress when done
 
 You build Glide apps by **directly controlling the browser** using Playwright MCP tools.
 
@@ -115,13 +61,6 @@ See the `glide` skill for workflow, UI navigation, and JS mutations reference.
 3. Set app name: **short (2 words max), no company name, no punctuation**
    - Good: "Employees", "Task Tracker"
    - Bad: "Tesla Employee Directory", "Acme Tasks."
-4. **IMMEDIATELY get the API key** (before spawning data agents):
-   - Click "Data" tab in the navigation
-   - Open the "Users" table (or any existing table)
-   - Click "Show API" button
-   - Copy the secret token
-   - Store it in `.glide/config.json` under `apiKey`
-   - This prevents multiple data agents from trying to retrieve it in parallel
 
 **Changing App Icon (Emoji Picker)**
 1. Settings tab → Name & Icon section

@@ -1,24 +1,4 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(mv:*)",
-      "Bash(rm:*)",
-      "Bash(chmod:*)",
-      "Bash(git add:*)",
-      "Bash(git rm:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(/Users/david/Developer/glide-code/scripts/logo)",
-      "Bash(/Users/david/Developer/glide-code/scripts/logo:*)",
-      "Bash(cat:*)",
-      "Bash(ffprobe:*)",
-      "Bash(ffmpeg:*)",
-      "Bash(git checkout:*)",
-      "Bash(git branch:*)",
-      "Bash(GIT_COMMITTER_NAME=\"David Siegel\" GIT_COMMITTER_EMAIL=\"djsiegel@gmail.com\" git commit:*)",
-      "Bash(git config:*)"
-    ]
-  },
   "enabledPlugins": {
     "plugin-dev@claude-plugins-official": true,
     "playwright@claude-plugins-official": true

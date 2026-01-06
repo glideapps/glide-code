@@ -1,7 +1,0 @@
-#!/bin/bash
-# Start Claude Code with the Glide plugin
-
-PLUGIN_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-
-cd "$PLUGIN_DIR"
-claude --plugin-dir glide "$@"

@@ -1,4 +1,0 @@
-#!/bin/bash
-# Start Claude Code for working on this plugin repo
-
-claude "$@"

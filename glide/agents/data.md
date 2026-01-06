@@ -115,6 +115,19 @@ If table creation fails partway:
 
 **Track table IDs**: After creating a table, save its ID. Use that ID for all subsequent operations on that table.
 
+## CRITICAL: Disambiguate Table Names
+
+**Add 3 random characters to the end of table names** to help identify them when linking.
+
+Example: Instead of "Employees", create "Employees xk7"
+
+Why:
+- The team may have many tables with similar names
+- When linking tables in the UI, you need to find the right one
+- The random suffix makes your tables easy to identify
+
+Generate a random 3-character suffix (lowercase letters/numbers) for each table you create. Tell the build agent these table names so it can find them when linking.
+
 ## Prerequisites
 
 ### API Token
@@ -252,7 +265,7 @@ curl -X POST "https://api.glideapps.com/tables" \
   -H "Authorization: Bearer $GLIDE_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Products",
+    "name": "Products abc",
     "schema": {
       "columns": [
         {"id": "name", "displayName": "Name", "type": "string"},
@@ -275,7 +288,7 @@ curl -X POST "https://api.glideapps.com/tables" \
   -H "Authorization: Bearer $GLIDE_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Products",
+    "name": "Products abc",
     "appsToLink": ["APP_ID_HERE"],
     "schema": {
       "columns": [

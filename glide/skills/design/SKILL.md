@@ -19,14 +19,44 @@ Click the "+" button in the Navigation or Menu section of the Layout Editor.
 | **Custom screen** | Blank screen to build freely | Dashboards, custom layouts |
 | **Form screen** | Data entry form | Add/edit records |
 
-### Sample Screen Templates
+**Important - Avoid Sample Screen Templates:**
 
-Pre-built templates for common patterns:
-- **Project management** - Task tracking layout
-- **Dashboard** - Overview with metrics
-- **Company directory** - People/contacts list
-- **Multi-Step form** - Wizard-style data entry
-- **Chat** - Messaging interface
+When creating a new screen, you'll see options for "Sample Screens" templates (Project management, Dashboard, Company directory, etc.). **Do not use these templates** - they create pre-configured layouts that make it difficult to integrate your own data.
+
+**Why avoid sample screens:**
+- They come with sample/placeholder data that's hard to replace
+- Data binding is pre-configured and difficult to modify
+- Components may not match your actual data structure
+- Harder to customize than building from scratch
+
+**Recommended approach instead:**
+
+1. **For collection screens (lists, directories):**
+   - Choose "Screen from data"
+   - Select your backing table
+   - Design the collection and detail views from scratch with appropriate components
+
+2. **For dashboards or multi-section screens:**
+   - Choose "Custom Screen"
+   - Optionally click "Choose data source" to link to a table
+   - Add components directly to build your layout
+
+3. **For all screens:**
+   - Start blank, add components one by one
+   - This gives you full control over data binding and layout
+   - It's clearer what each component does and where data comes from
+
+**Example workflow for a dashboard:**
+```
+1. Click "+" in Navigation
+2. Select "Custom screen"
+3. Click "Choose data source" if needed (optional - links to a table)
+4. Add components: Headline, Big Numbers, Collections, Charts, etc.
+5. Configure each component's data binding
+6. Organize with Containers for multi-column layouts
+```
+
+This approach is more work upfront but results in screens that are easier to understand, modify, and debug.
 
 ## Design Principles
 
@@ -191,6 +221,178 @@ When evaluating collection style:
 - If items have rich metadata (images, descriptions), ensure Card is showing the relevant fields
 - Remember mobile vs desktop - some styles work better on each (Tables are harder on mobile)
 - Ask the user: "Would you ever need to compare values side-by-side?" If yes, Table is better
+
+### Configuring Collections
+
+**Every collection needs proper configuration** - don't just add a collection and leave it with default settings. The Options tab and display fields are critical for creating a useful, well-organized collection.
+
+#### Options Tab - Filter and Sort
+
+**Filter and Sort options are used on basically every collection.** Access them in the Options tab when you have a collection selected.
+
+**Sort settings:**
+- Configure what field to sort by and the sort order (A→Z or Z→A)
+- **For time-based data**: Use descending order (Z→A) to show most recent items first
+  - Example: Sort by "Created on:" field, Z→A order → newest problems appear at the top
+- **For alphabetical data**: Use A→Z for standard alphabetical ordering
+- **For numeric data**: Consider whether users want highest-to-lowest or lowest-to-highest
+
+**Filter settings:**
+- Limit what items appear in the collection based on conditions
+- Example: Show only "Active" status items, or items from the past 30 days
+- Use filters to create focused views of your data
+
+**Common pattern for time-based collections:**
+```
+Collection: Recent Problems
+Options tab:
+  - Sort by: Created on
+  - Order: Z→A (descending - most recent first)
+  - Filter: (optional - e.g., only show last 5, or only active items)
+```
+
+#### Display Fields - Meta, Title, Description
+
+**Think carefully about which columns to show in each display field** - this creates the visual hierarchy and determines what information users see at a glance.
+
+**The three display fields:**
+
+| Field | Visual Appearance | Use For | Example |
+|-------|------------------|---------|---------|
+| **Meta** | Small text above the title | Category, type, or context | "Bug Report", "Feature Request", "High Priority" |
+| **Title** | Large, bolded text | Primary identifier or name | "Login page crashes on mobile", "Employee Name" |
+| **Description** | Paragraph text below title | Details or summary | Full problem description, bio, address |
+
+**Guidelines:**
+
+1. **Meta field** - Short contextual info that helps categorize or identify the type
+   - Status ("Open", "Closed")
+   - Category ("Support", "Sales")
+   - Type ("Bug", "Feature")
+   - Priority ("High", "Medium", "Low")
+
+2. **Title field** - The main identifier users will recognize
+   - Name column
+   - Subject or headline
+   - Primary key field
+   - Should be concise and unique enough to identify the item
+
+3. **Description field** - Supporting details that help users understand the item
+   - Full description or notes
+   - Address or location
+   - Summary text
+   - Bio or about section
+   - Can be longer than Title
+
+**Example configuration for Problems collection:**
+```
+Collection style: Card or List
+Display fields:
+  - Meta: Type ("Bug Report", "Feature Request")
+  - Title: Name ("Login page crashes on mobile")
+  - Description: Description (full explanation of the problem)
+Options:
+  - Sort by: Created on, Z→A (most recent first)
+```
+
+**Best practices:**
+- Don't leave display fields empty - choose the most relevant columns for each
+- Match the field content to its visual weight (big bold Title for important info, small Meta for context)
+- Think about what users need to see to identify and understand each item
+- Consider adding emoji or icon columns for Meta to create visual scanning patterns
+
+#### Collection Titles
+
+**Use the built-in Title field** in the collection's Data properties, NOT a separate Text component above the collection.
+
+**Why:**
+- The Title field displays inline with the search bar and action buttons
+- Creates a more professional, integrated UI
+- Saves vertical space
+- Follows Glide's design patterns
+
+**How to set:**
+1. Select the collection component
+2. In the right properties pane, find the Data section
+3. Set the Title field with your collection name (e.g., "Problems", "Inventory Locations")
+
+**Don't do this:**
+```
+❌ Add a Text or Headline component above the collection
+❌ Use a separate title component for the collection name
+```
+
+**Do this instead:**
+```
+✅ Use the Title field under Data in the collection's properties
+✅ The title appears inline with search bar and buttons automatically
+```
+
+#### Removing Image Placeholders
+
+**If your source table doesn't have images, remove dynamic data bindings from the Image field under Items Data.** This prevents blank grey squares from appearing in your collections.
+
+**The problem:**
+- When you bind the Image field to a column that has no image data
+- Glide shows a grey placeholder square for each item
+- This wastes space and looks unprofessional
+
+**The solution:**
+1. Select the collection component
+2. Find Items Data section in the right properties pane
+3. Locate the Image field
+4. If it's bound to a column (e.g., "Type", "Meeting Choice", etc.) and that column has no actual images
+5. Clear the binding (remove the dynamic data)
+6. The grey squares disappear
+
+**When to remove image bindings:**
+- The source table has no image column
+- The bound column contains text, not image URLs
+- You see grey placeholder squares in the collection
+
+**When to keep image bindings:**
+- The source table has actual images (URLs, uploaded files, generated images)
+- You're using profile photos, product images, or other visual content
+- The images add value to the browsing experience
+
+#### Filter Popup UI - Critical Behavior
+
+**IMPORTANT: The X button on filter popups DELETES the filter, it is NOT a close button.**
+
+This is a common point of confusion with significant consequences - clicking the X will remove your entire filter configuration, not save and close it.
+
+**The problem:**
+- Most UIs use X buttons to close dialogs and save changes
+- Glide's filter popup uses X to DELETE/REMOVE the filter
+- This is counterintuitive and can cause you to lose configured filters
+
+**The correct way to save and close a filter popup:**
+1. Configure your filter settings (conditions, matching rules, etc.)
+2. **Click anywhere else on the screen** to close the popup
+3. This saves the filter and closes the popup
+4. The filter is now active and saved
+
+**What NOT to do:**
+- ❌ Don't click the X button expecting it to save and close
+- ❌ The X button will delete the entire filter configuration
+
+**When to use the X button:**
+- Only when you want to DELETE/REMOVE the filter completely
+- If you accidentally configured a filter you don't want
+
+**Example workflow - Adding a filter to show only current client's visits:**
+```
+1. Select the Visits collection component
+2. Click the Filter option in the Options tab
+3. Configure the filter: "Client is 🔒 Row ID"
+4. **Click elsewhere on the screen** (not the X) to close and save
+5. ✅ Filter is now saved and active
+```
+
+**If you accidentally click X:**
+- The filter will be deleted
+- You'll need to reconfigure it from scratch
+- Use CMD+Z immediately to undo if this happens
 
 ## Design Techniques
 

@@ -16,23 +16,10 @@ description: |
   <example>
   After building: Automatically run QA agent to validate claimed features
   </example>
-skills: glide, layout, data-modeling, workflows, browser
+skills: glide, layout, data-modeling, workflows
 ---
 
 # Glide QA Agent
-
-## Browser Assignment
-
-When spawned for concurrent work, you may be assigned a browser number (1-6).
-
-**If assigned** (e.g., "using browser 4"):
-- Use ONLY `mcp__browser-4__browser_*` tools
-- Example: `mcp__browser-4__browser_navigate`, `mcp__browser-4__browser_snapshot`
-
-**If not assigned**:
-- Use default `mcp__browser-1__browser_*` tools
-
-This allows QA to run in parallel with building or design review.
 
 You verify that Glide app features actually work. **Don't trust that features were implemented - verify them.**
 

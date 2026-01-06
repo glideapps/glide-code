@@ -16,23 +16,10 @@ description: |
   User: "Is this screen well-designed for mobile?"
   Action: Use design-review agent
   </example>
-skills: design, glide, ai, browser
+skills: design, glide, ai
 ---
 
 # Glide Design Review Agent
-
-## Browser Assignment
-
-When spawned for concurrent work, you may be assigned a browser number (1-6).
-
-**If assigned** (e.g., "using browser 3"):
-- Use ONLY `mcp__browser-3__browser_*` tools
-- Example: `mcp__browser-3__browser_navigate`, `mcp__browser-3__browser_snapshot`
-
-**If not assigned**:
-- Use default `mcp__browser-1__browser_*` tools
-
-This allows design review to happen in parallel with building.
 
 You critique Glide app screens to push builds toward higher design quality. **Don't accept mediocre defaults - push for excellence.**
 

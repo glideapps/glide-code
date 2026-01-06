@@ -7,6 +7,31 @@ description: |
 
 # Glide Data Modeling
 
+## Table Creation Strategy
+
+**When building apps, create tables via the Glide API, not the UI.**
+
+If you're starting a new app or adding tables to an existing app, the workflow is:
+
+1. **Design the data schema**
+   - Determine what tables you need
+   - Define columns for each table (names, types)
+   - Plan relationships between tables
+   - Consider what sample data would demonstrate the structure
+
+2. **Use the data agent to create tables**
+   - Pass the schema to the data agent
+   - Include sample data to populate the tables
+   - The data agent uses the Glide API to create tables
+   - Tables are automatically linked to your app
+
+3. **Don't try to create tables in the UI**
+   - The API is much faster for bulk creation
+   - API ensures consistent structure
+   - Sample data validates the schema immediately
+
+**This is the primary table creation method.** Only add columns via the UI after tables exist (see "Creating Columns via UI" section below).
+
 ## Key Concept: Column-Based Calculations
 
 **IMPORTANT**: All calculations in Glide are built in the Data Editor by adding computed columns that build off one another. Unlike spreadsheets with cell formulas, Glide uses a column-based computation model.
@@ -143,19 +168,120 @@ The Type dropdown is organized into categories:
 
 Type in the search box to filter.
 
+## Row IDs - The Foundation of Relations
+
+**Every table should have a Row ID column.** Row IDs are unique identifiers that Glide auto-generates for each row, and they're the proper way to create reliable relations between tables.
+
+### Creating a Row ID Column
+
+1. In Data Editor, click any column header → "Add column right" (or use **CMD+SHIFT+ENTER**)
+2. Name the column (or leave blank - it will auto-name to "Row ID")
+3. Change Type to **Basic → Row ID**
+4. The column auto-names itself "Row ID"
+5. Glide automatically generates unique IDs for every row
+
+### Why Use Row IDs for Relations
+
+**Row IDs are better than names or other fields** for relations because:
+- **Unique**: Guaranteed to be unique (names can duplicate)
+- **Stable**: Never change even if other data is updated
+- **Reliable**: Work correctly with Glide's relation system
+- **Standard**: The proper Glide pattern for table relationships
+
+### Common Pattern: Data Contains Row IDs
+
+Often your imported data or form submissions will already contain Row IDs as references:
+
+**Example**: Visits table with client references
+- Visits table has a "Client" column containing Row IDs (e.g., "abc123")
+- These are Row IDs from the Clients table, not client names
+- Create a relation matching Visits → Client to Clients → Row ID
+- Use Lookup columns to display actual client information
+
+This pattern is common when:
+- Forms submit data and store user Row IDs
+- One table references another via Row ID
+- Data imported from systems using unique IDs
+
+## Per-Item Aggregations: Query Pattern
+
+**Critical Concept**: When you need to count, sum, or aggregate data PER ROW (not for the whole table), use Query columns to filter first, then Rollup/Single Value.
+
+### The Problem: Rollup on Entire Table
+
+**Common Mistake:**
+- You want "Total Visits" for each client
+- You create a Rollup that counts the entire Visits table
+- **Result**: Every client shows the same number (total visits across ALL clients)
+- This happens because you're aggregating the whole table, not per-client
+
+### The Solution: Query → Rollup Pattern
+
+**Correct Approach:**
+
+```
+1. Query Column: Filter the data to THIS item
+   - Source: The table you want to aggregate (e.g., Visits)
+   - Filter: Match to this row (e.g., Client matches Row ID)
+   - Sort: Optional, for ordered results
+
+2. Rollup/Single Value Column: Aggregate the filtered Query
+   - Source: The Query column (NOT the whole table)
+   - Aggregation: Count, Sum, Average, etc.
+   - Result: Per-item aggregation
+```
+
+**Example: Client Visit Statistics**
+
+In Clients table:
+1. **Query**: "Client's Visits" → Visits where Client = Row ID, sorted by date descending
+2. **Rollup**: "Total Visits" → Count of Client's Visits Query
+3. **Single Value**: "Last Visit Date" → First item of Client's Visits → Visit Date
+
+**Now each client shows their own stats:**
+- Sarah Johnson: 1 visit
+- Maria Rodriguez: 2 visits
+- etc.
+
+### Query vs Relation for Aggregations
+
+**Use Query when:**
+- You need per-item counts, sums, or averages
+- You need filtering beyond simple column matching
+- You need sorted results (e.g., most recent first)
+
+**Use Relation when:**
+- Simple one-to-one or one-to-many lookups
+- Standard Lookup pattern (get related values)
+- No complex filtering needed
+
+**Key insight from expert:** "Query and relations are basically the same thing, except queries let you add more filters."
+
 ## Relation & Lookup Pattern
 
 This is the most common pattern for connecting data:
 
+### Step 0: Ensure Both Tables Have Row ID Columns (Recommended)
+- Add a Row ID column to both tables if they don't already have one
+- Type: Basic → Row ID
+- This creates a stable, unique identifier for each row
+
 ### Step 1: Create Relation Column
 - Creates a link between two tables
-- Match rows based on a key column
+- **Best practice**: Match using Row ID columns
+- Match rows based on a key column (preferably Row ID)
 - Can be single or multiple relations
+
+**Example**: Link Visits to Clients
+- Visits table has "Client" column (contains Row IDs)
+- Clients table has "Row ID" column
+- Create Relation in Visits: Match "Client" to "Clients → Row ID"
 
 ### Step 2: Create Lookup Column
 - References the Relation column
 - Pulls specific column values from related rows
-- Example: Get manager's phone number via Employee->Manager relation
+- Example: Lookup "Client Name" and "Client Phone" via the Client relation
+- This brings human-readable data into your table
 
 ### Step 3: Create Rollup Column (if aggregating)
 - References the Relation column

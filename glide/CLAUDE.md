@@ -1,6 +1,6 @@
 # Glide Plugin - Important Guidelines
 
-**New to this plugin?** Run `/start` to get set up - it will guide you through interactive login, choosing new/existing app, and selecting what to do.
+**New to this plugin?** Run `/start` to get set up - it will guide you through choosing new/existing app, storing your API key, and selecting what to do.
 
 **Got stuck?** Run `/tip` to provide expert guidance - the plugin will learn from your tip and update its skills for future use.
 
@@ -40,27 +40,6 @@ The file-analysis agent returns:
 - **qa**: Verifies features actually work before telling user the app is ready
 - **app-research**: Explores existing apps to document structure, features, and data model (comprehensive or focused)
 - **skill-learner**: Extracts learnings from expert tips and updates skill files (called automatically by `/tip` command)
-
-## Concurrent Operations (Multi-Browser)
-
-The plugin supports 6 parallel browser sessions for concurrent work. See the `browser` skill for details.
-
-**When to use parallel agents:**
-- Building multiple screens at once
-- Design review while building continues
-- QA verification in parallel with fixes
-- Editing data while adjusting layouts
-
-**How to spawn parallel agents:**
-```
-"Build the Tasks screen using browser 1"
-"Build the Projects screen using browser 2"
-"Review the Employees screen design using browser 3"
-```
-
-Each agent uses `mcp__browser-N__browser_*` tools for its assigned browser.
-
-**Authentication:** Run `/start` to log in and set up all browsers. It handles browser auth and profile synchronization automatically.
 
 ## Key Rules
 

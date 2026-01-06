@@ -1,72 +1,44 @@
-**⚠️ This is highly experimental and will break often. Use at your own risk.**
+# Glide Claude Code Plugin
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="media/logo-light.png">
-  <source media="(prefers-color-scheme: dark)" srcset="media/logo-dark.png">
-  <img src="media/logo-light.png" alt="Glide Code" width="600" height="auto">
-</picture>
+A Claude Code plugin for building Glide applications using browser automation and the Glide API.
 
-## What?
+## What is This?
 
-Glide Code is a plugin for [Claude Code](https://docs.claude.com), which gives the world's most popular coding agent the ability to not only build apps and work in Glide, but to do so with many agents in parallel via browser automation and Glide's multiplayer support.
+This is a **Claude Code plugin** that extends Claude Code with specialized capabilities for building Glide apps:
 
-This is a much more powerful (but slower) version of the built-in Agent in Glide today. It's more powerful because it can do everything in the builder, but it's also a general-purpose agent which can do things like analyze files and use the Glide API.
-
-Clip from a 4hr session where Glide Code built 3 apps (sped up 40x):
-
-<p align="center">
-  <img src="media/demo.gif" alt="Glide Code Demo" width="800">
-</p>
+- **Browser Automation**: Build Glide apps by controlling the browser with Playwright
+- **API Integration**: Create tables and import data via the Glide API v2
+- **Specialized Agents**: Autonomous agents for building, data import, design review, and QA
+- **Design Knowledge**: Best practices for screens, components, and layouts
 
 ## Installation
 
-First, [install Claude Code](https://docs.claude.com) if you don't have it.
+### Option 1: Install from GitHub (Recommended)
 
+```bash
+claude plugin add --repo glideapps/glide-claude-code
 ```
-/plugin marketplace add glideapps/glide-code
-/plugin install glide@glide
+
+### Option 2: Local Development
+
+Clone and point Claude Code to the local directory:
+
+```bash
+git clone git@github.com:glideapps/glide-claude-code.git
+claude --plugin-dir /path/to/glide-claude-code/glide
 ```
 
 ## How to Use
 
-Run the `/glide` command with what you want to build or work on:
+Once installed, ask Claude to build a Glide app:
 
 ```
-/glide Build an app for managing repairs for our construction company. The data is in repairs.csv
+"Build a task management app in Glide"
+"Create an employee directory from this spreadsheet"
+"Help me design a customer portal"
 ```
 
-This will open a browser window where you can sign in to Glide (first time only). Your session will be remembered for future use. Claude will use the appropriate agents to build your app.
-
-You can also kick off a working session with an existing app:
-
-```
-/glide do a design review on my Repairs app
-```
-
-**Working on multiple apps:** You can work on many apps at the same time, but you should work on them in separate directories with separate instances of [Claude Code](https://docs.claude.com).
-
-## Development
-
-### Running Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `./scripts/start` | Run plugin from installed/cloned repo (from any directory) |
-| `./scripts/dev` | Run plugin for local development (run from repo root) |
-
-When working on the plugin itself, use `scripts/dev` from the repository root. This loads the plugin from the current directory, so changes to agents, skills, and commands are reflected immediately.
-
-```bash
-git clone git@github.com:glideapps/glide-code.git
-cd glide-code
-./scripts/dev
-```
-
-Alternatively, point [Claude Code](https://docs.claude.com) to the local directory:
-
-```bash
-claude --plugin-dir /path/to/glide-code/glide
-```
+Claude will use the appropriate agents to build your app.
 
 ## Build Workflow
 
@@ -78,13 +50,6 @@ claude --plugin-dir /path/to/glide-code/glide
 6. **Design review** - Critique and improve screen layouts
 7. **QA verification** - Verify features actually work
 8. **Finalize** - Configure access and publish
-
-## Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/glide` | Guided setup - interactive login, choose app, select task |
-| `/tip` | Provide expert guidance - plugin learns and updates skills |
 
 ## Agents
 
@@ -109,13 +74,33 @@ claude --plugin-dir /path/to/glide-code/glide
 | **ai** | AI columns (Generate Text, Audio to Text, etc.) |
 | **api** | Glide API v2 usage |
 | **app-sharing** | Privacy settings and authentication |
-| **browser** | Multi-browser coordination for parallel work |
 
-## Concurrent Operations
+## Prerequisites
 
-The plugin supports up to 6 parallel browser sessions, enabling multiple agents to work simultaneously on the same app. Glide is multiplayer-enabled, so concurrent edits work seamlessly.
+1. **Glide Account** - Sign in at [go.glideapps.com](https://go.glideapps.com)
+2. **Playwright MCP** - Browser automation (configured in plugin)
 
-**Use cases:**
-- Build multiple screens in parallel
-- Design review while building continues
-- QA verification alongside fixes
+## First Time Setup
+
+1. Start Claude Code with the plugin installed
+2. Ask Claude to build a Glide app
+3. A browser window opens - sign in to Glide (first time only)
+4. Your session is remembered for future use
+
+## API Token (Optional)
+
+For data operations via the Glide API, get your token from:
+**Glide Builder → Data tab → Show API → Copy secret token**
+
+Store it in environment variable `GLIDE_API_TOKEN` or provide it when asked.
+
+## Key Rules
+
+- **Always create Blank apps** - Never use "Import a file"
+- **Use API for data import** - Faster and more reliable than UI upload
+- **Always include images** - Use placeholder URLs for sample data
+- **Design review matters** - Don't skip reviewing detail screens
+
+## License
+
+Copyright © 2024 Glide. All rights reserved.

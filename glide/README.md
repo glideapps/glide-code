@@ -17,7 +17,7 @@ Build complete apps in Glide Builder (go.glideapps.com) using Claude Code with b
 
 ### Option 1: From GitHub Repository
 ```bash
-claude --plugin-repo glideapps/glide-code
+claude --plugin-repo glideapps/glide-claude-code
 ```
 
 ### Option 2: From Local Directory
@@ -79,13 +79,12 @@ Your login will be remembered for future sessions.
 ### Using the /start Command
 
 Run `/start` to get started. This guided workflow will:
-1. Guide you through interactive login to Glide in the browser
-2. Ask if you want to create a new app or edit an existing one
-3. If editing, prompt for the app URL or name
-4. Let you choose what to do: build UI, analyze files, review design, etc.
-5. Launch the appropriate agent to complete your task
+1. Ask if you want to create a new app or edit an existing one
+2. If editing, prompt for the app URL or name
+3. Ask for your Glide API key (stored securely in `.claude/glide.local.md`)
+4. Let you choose what to do: build UI, import data, analyze files, etc.
 
-Your authentication is stored locally in `.glide/` and excluded from version control. The API key is requested only when actually creating tables in an app.
+Your API key is stored locally and excluded from version control.
 
 ### Building Apps Directly
 1. Start Claude Code with the plugin

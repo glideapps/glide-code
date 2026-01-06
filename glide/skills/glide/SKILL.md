@@ -13,13 +13,12 @@ description: |
 
 1. **Clarify use case** - Understand what the user wants
 2. **Create app first** - Get browser auth done early (blank app)
-3. **Get API key** - Go to Data Editor, retrieve token from Users table (before spawning data agents)
-4. **Analyze file** (if provided) - Use `file-analysis` agent
-5. **Create tables via API** - Use `data` agent (faster than UI, in parallel)
-6. **Build screens** - Use `build` agent for Playwright automation (in parallel)
-7. **Design review** - Apply `design` skill to evaluate and improve screens
-8. **QA verification** - Use `qa` agent to verify features actually work
-9. **Finalize** - Access settings, testing, publish
+3. **Analyze file** (if provided) - Use `file-analysis` agent
+4. **Create tables via API** - Use `data` agent (faster than UI)
+5. **Build screens** - Use `build` agent for Playwright automation
+6. **Design review** - Apply `design` skill to evaluate and improve screens
+7. **QA verification** - Use `qa` agent to verify features actually work
+8. **Finalize** - Access settings, testing, publish
 
 ## Agents
 
@@ -31,95 +30,6 @@ description: |
 | `design-review` | Critique screens for design quality | After building screens, to improve component choices and layouts |
 | `qa` | Verify features actually work | Before telling user the app is ready |
 | `app-research` | Explore and document existing apps | Understanding an app's structure, answering questions about it |
-
-## Parallel Builds (Multi-Browser) - Maximize Speed
-
-The plugin supports 6 concurrent browser sessions. **Browser automation is slow, so parallelize aggressively.**
-
-### Parallel Strategy for New Apps
-
-**Phase 1: Setup (Sequential)**
-1. User provides use case
-2. Create blank app (browser 1)
-3. **Go to Data Editor and retrieve API key immediately**
-   - Click "Data" tab in Glide Builder
-   - Open Users table (or any existing table)
-   - Click "Show API"
-   - Copy the secret token
-   - Store in `.glide/config.json` under `apiKey`
-4. **Do this BEFORE spawning data agents** - prevents multiple agents trying to get the key in parallel
-
-**Phase 2: Data Creation (Highly Parallel)**
-- Spawn N `data` agents in parallel to create all tables (up to 6 concurrent)
-- Each agent creates and links one table to the app with real or sample data
-- Example: "Create the Tasks table using browser 1, create the Projects table using browser 2, create the Users table using browser 3"
-- **WAIT for all tables to exist** - screens cannot be built without their backing tables
-
-**Phase 3: Screen Building (Highly Parallel)**
-- Once all tables exist, spawn up to 6 `build` agents in parallel
-- Each agent builds screens for one data table (collection + detail view)
-- Can start immediately after Phase 2 completes
-- Example: "Build screens for Tasks using browser 1, build screens for Projects using browser 2, build screens for Users using browser 3"
-- Agents design collections, detail views, and forms independently
-
-**Phase 4: Design Review (One Screen at a Time)**
-- Review ONE screen at a time, not the whole app (much more efficient)
-- Reuse the same browser from build agents (alternate between building and reviewing)
-- As each build agent finishes a screen, spawn design-review for that screen only
-- Example workflow:
-  1. Builder finishes Tasks screen on browser 1
-  2. Design-review agent reviews Tasks using browser 1 (while other builders continue on browsers 2-6)
-  3. Get feedback, pass to builder
-  4. Builder implements feedback on Tasks (browser 1)
-  5. Meanwhile, another builder finishes Projects on browser 2
-  6. Design-review reviews Projects on browser 2
-- Keep design review focused on one screen at a time for speed
-
-**Phase 5: Implement Feedback (Parallel)**
-- Spawn `build` agents to apply design improvements (up to 6)
-- Different agents apply feedback to different screens simultaneously
-- Example: "Implement design feedback for Tasks using browser 1, implement feedback for Projects using browser 2"
-
-**Phase 6: QA (Parallel)**
-- Run `qa` agents on different features in parallel (up to 6)
-- Test each screen/feature independently
-- Example: "Test Tasks creation using browser 5, test Projects editing using browser 6"
-
-### How to Spawn Parallel Agents
-
-**CRITICAL: Each parallel agent must use a different browser number.**
-
-```
-"Create the Tasks table using browser 1"
-"Create the Projects table using browser 2"
-"Create the Users table using browser 3"
-```
-
-**Browser assignment rules:**
-- Use browsers 1-6 only
-- Each agent gets a unique browser number (no sharing)
-- Example: If spawning 3 data agents, assign browsers 1, 2, 3
-- Example: If spawning 5 build agents, assign browsers 1, 2, 3, 4, 5
-- You cannot have two agents both using browser 2
-
-Each agent will:
-- Use ONLY its assigned browser instance (`mcp__plugin_glide_browser-N__browser_*` tools)
-- Work independently without blocking others
-- Complete when the task is done
-
-### Key Rules for Parallelization
-
-1. **Get API token early** - Create one table in the first browser, grab the token from Data Editor
-2. **Each agent needs the app ID** - Pass `appId` to all parallel agents
-3. **Tables must exist before screens** - CRITICAL: All tables must be created (Phase 2) before any screens can be built (Phase 3). You can't design a screen without its backing data table.
-4. **Data and tables come first** - Ensure real or sample data is imported into each table before building screens for it
-5. **Use all 6 browsers** - Don't leave idle browsers when you could be building
-6. **Phase dependencies**:
-   - Phase 1 (Setup) → Phase 2 (Data) → Phase 3 (Screens) are sequential
-   - Phases 4, 5, 6 (Design, Feedback, QA) can overlap and parallelize
-7. **Design review one screen at a time** - Review individual screens, not the whole app. Alternate with building on the same browser.
-8. **Design review doesn't block** - Review can happen while other builders continue on different browsers
-9. **QA is the final stage** - Run QA on all screens in parallel to validate before finishing
 
 **Skills:**
 | Skill | Purpose | When to Use |
@@ -147,23 +57,7 @@ Use `build` agent: go.glideapps.com → "New app" → **"Blank"** → "Create ap
 
 **NEVER use "Import a file"** - always Blank. Data comes via API.
 
-### 3. Get API Key (Before Spawning Data Agents)
-
-**Immediately after creating the app, retrieve the API key.**
-
-This prevents multiple data agents from trying to fetch it in parallel later.
-
-Steps (using `build` agent):
-1. Click the "Data" tab
-2. Open the "Users" table (or any existing table)
-3. Click "Show API" button
-4. Copy the secret token
-5. Store in `.glide/config.json` under `apiKey`
-6. Pass this to all `data` agents
-
-**Why**: Data agents need the API key to create tables. Getting it early and once prevents race conditions.
-
-### 4. Analyze File (If User Has One)
+### 3. Analyze File (If User Has One)
 
 Use `file-analysis` agent with:
 - The file path
@@ -171,15 +65,23 @@ Use `file-analysis` agent with:
 
 Returns: tables to import, relationships, formulas to rebuild
 
-### 5. Create Tables via API
+### 4. Create Tables via API
 
-Use `data` agent - much faster than UI for bulk data.
+**When you need tables (either from a file or for a new app concept), use the `data` agent to create them via the API.**
+
+This is the primary method for adding tables to Glide apps. Don't attempt to create tables through the UI.
+
+**Workflow**:
+1. **Design the data schema** - Determine what tables and columns are needed
+2. **Use the `data` agent** - Pass table schemas and sample data
+3. **The data agent creates tables via Glide API** - Tables are created and linked to the app
+4. **Build agent links tables in UI** - Tables appear in Data Editor, ready to use
 
 **Critical**: Always create NEW tables. Never inject into existing ones.
 
 **Always include images**: Use `https://picsum.photos/seed/{id}/400/300` placeholders.
 
-### 6. Build Screens
+### 5. Build Screens
 
 Use `build` agent to:
 1. Set branding (name, icon, colors) - see naming rules below
@@ -188,6 +90,12 @@ Use `build` agent to:
 4. Create screens from data
 5. Configure collections and detail views
 
+**Critical - Screen Creation Method:**
+- **Never use Sample Screen templates** (Project management, Dashboard, etc.) - they make data integration difficult
+- **Use "Screen from data"** for collections/lists backed by tables
+- **Use "Custom Screen"** (optionally with "Choose data source") for dashboards
+- **Always start blank and add components** - this gives full control over data binding and layout
+
 **App naming rules:**
 - **Short**: 2 words maximum
 - **No company name**: The app lives in the company's team already
@@ -195,21 +103,17 @@ Use `build` agent to:
 - Good: "Employees", "Task Tracker", "Inventory"
 - Bad: "Tesla Employee Directory", "Acme Inc. Tasks."
 
-### 7. Design Review (One Screen at a Time)
+### 6. Design Review
 
-**Review screens individually, not the whole app** - much more efficient.
+After basic screens exist, use the `design-review` agent to critique and improve them:
+- Check mobile and desktop layouts
+- Evaluate collection styles (Card vs List vs Table vs Kanban)
+- Review component choices (Contact, Big Numbers, Progress, etc.)
+- Suggest improvements (status emojis, icons, better data density)
 
-As each `build` agent finishes a screen:
-1. Spawn a `design-review` agent for that ONE screen
-2. Reuse the same browser that just finished building (save a browser)
-3. Get feedback on: mobile/desktop layouts, collection styles, component choices, data density
-4. Pass feedback back to builder
+Then use `build` to implement the recommended improvements.
 
-Pattern: Builder finishes screen → Review it → Get feedback → Builder implements → Repeat for next screen
-
-**Don't review the entire app at once** - that's slow. Review and improve one screen, then move to the next.
-
-### 8. QA Verification (Critical!)
+### 7. QA Verification (Critical!)
 
 **Don't tell the user the app is ready until you verify features actually work.**
 
@@ -223,7 +127,7 @@ Use `qa` agent to:
 
 The QA agent will produce a report of PASS/FAIL for each feature. Fix any failures before declaring the app complete.
 
-### 9. Finalize
+### 8. Finalize
 
 Configure access/privacy, test as different users, publish.
 
