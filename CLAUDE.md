@@ -1,58 +1,109 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ## Repository Overview
 
-This is a **Claude Code plugin** for building Glide applications. The plugin enables Claude Code to create and modify Glide apps using browser automation (Playwright) and the Glide API v2.
+This is a **Glide app builder plugin** that uses browser automation to create Glide apps at go.glideapps.com.
 
-## Project Structure
+## ⚠️ START HERE
+
+When building a Glide app, **read these files first:**
+
+1. **`glide/orchestrator/ORCHESTRATOR.md`** - Main workflow coordinator
+2. **`glide/CLAUDE.md`** - Plugin overview and architecture
+
+## Architecture
+
+This plugin uses a **three-layer hierarchical architecture:**
 
 ```
-glide/                     # The Claude Code plugin
-  .claude-plugin/
-    plugin.json            # Plugin manifest
-  .mcp.json                # MCP server config (Playwright)
-  agents/                  # Autonomous agents for specific tasks
-  commands/                # Slash commands (/start, /tip)
-  skills/                  # Knowledge and instructions for various domains
-  CLAUDE.md                # Plugin-specific guidelines (read by agents)
+ORCHESTRATOR (glide/orchestrator/)
+    │
+    ├── data-agent (glide/agents/data/)
+    │       └── procedures/ (step-by-step browser commands)
+    │
+    ├── screen-builder (glide/agents/screen-builder/)
+    │       └── procedures/
+    │
+    ├── component-builder (glide/agents/component-builder/)
+    │       └── procedures/
+    │
+    └── BROWSER EXECUTOR (glide/browser/EXECUTOR.md)
+            └── selectors/ (UI element locations)
 ```
 
-## Key Components
+**Key principle:** 
+- Orchestrator knows WHAT to do (phases, coordination)
+- Sub-agents know HOW to do it (procedures)
+- Browser executor just executes commands (no Glide knowledge)
 
-**Agents** - Autonomous workers launched via the Task tool:
-- `build` - Browser automation for creating apps and screens
-- `data` - Glide API operations for tables and data import
-- `file-analysis` - Analyzes spreadsheets to extract data models
-- `design-review` - Critiques screens for design quality
-- `qa` - Verifies features work before declaring app ready
-- `app-research` - Explores existing apps to document structure
-- `skill-learner` - Extracts learnings from tips and updates skills
+## Key File Paths
 
-**Skills** - Domain knowledge in `skills/{name}/SKILL.md`:
-- `glide` - Primary skill: workflow, agent coordination, builder navigation
-- `design` - Screen structure, components, layouts
-- `data-modeling` - Tables, columns, Big Tables
-- `computed-columns` - Math, If-Then-Else, Relations, Rollups
-- `api` - Glide API v2 usage
-- `app-sharing` - Privacy, authentication, publishing
+| Purpose | Path |
+|---------|------|
+| **Orchestrator** | `glide/orchestrator/ORCHESTRATOR.md` |
+| **Plugin Overview** | `glide/CLAUDE.md` |
+| **Data Agent** | `glide/agents/data/AGENT.md` |
+| **Screen Builder** | `glide/agents/screen-builder/AGENT.md` |
+| **Component Builder** | `glide/agents/component-builder/AGENT.md` |
+| **Browser Executor** | `glide/browser/EXECUTOR.md` |
 
-**Commands** - User-invocable slash commands:
-- `/start` - Guided setup workflow
-- `/tip` - Provide expert guidance, plugin learns and updates skills
+## Procedures (How-To)
 
-## Plugin Architecture
+Step-by-step browser automation guides:
 
-The plugin uses Playwright MCP for browser automation. Agents read skill files for domain knowledge and use Playwright tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, etc.) to interact with the Glide Builder at go.glideapps.com.
+```
+glide/agents/data/procedures/
+  - add-column.md, add-relation.md, add-computed.md, get-api-key.md
 
-Build workflow: Create blank app → Analyze file (if provided) → Create tables via API → Build screens via browser → Design review → QA verification → Finalize
+glide/agents/screen-builder/procedures/
+  - create-app.md, create-tab.md, set-app-settings.md
 
-## Editing Guidelines
+glide/agents/component-builder/procedures/
+  - configure-collection.md, add-component.md, add-action.md
+```
 
-When modifying this plugin:
-- Agent files use YAML frontmatter for `name`, `description`, and `skills`
-- Skill files use YAML frontmatter for `name` and `description`
-- Command files use YAML frontmatter for `name`, `description`, and other metadata
-- The `glide/CLAUDE.md` contains guidelines read by agents during execution
-- Skills should be self-contained and reference other skills by name when needed
+## Skills (Domain Knowledge)
+
+Reference material about Glide features:
+
+```
+glide/skills/
+  - data-modeling/, computed-columns/, design/, api/, etc.
+```
+
+## Browser Selectors
+
+UI element locations:
+
+```
+glide/browser/selectors/
+  - navigation.md, data-editor.md, components.md
+```
+
+## Build Workflow Summary
+
+1. **Clarify** - Understand what user wants
+2. **Setup** - Create blank app, get API key
+3. **Data** - Create tables via API
+4. **Screens** - Add tabs from tables
+5. **Components** - Configure collections, detail screens, forms
+6. **Polish** - Actions, settings, branding
+7. **Review** - Design review
+8. **QA** - Verify features work
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/glide` or `/start` | Guided setup |
+| `/tip` | Provide expert guidance - plugin learns |
+
+## Key Rules
+
+1. **Data before screens** - Tables must exist before building UI
+2. **Use API for table creation** - Faster than UI
+3. **Never "Import a file"** - Always Blank app + API
+4. **App names: 2 words max** - Short, no company name
+5. **Always include images** - Use picsum.photos placeholders

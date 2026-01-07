@@ -1,703 +1,380 @@
 ---
 name: workflows
 description: |
-  Build Glide workflows with automation, loops, conditions, queries, and background processes.
-  Use when creating automations, processing data in bulk, building scheduled tasks, or integrating with external services.
+  Glide workflows (automations) - triggers, nodes, and automation patterns.
+  Covers both client-side App Interactions and server-side workflows.
 ---
 
-# Glide Workflows
+# Glide Workflows Skill
 
-Workflows are Glide's automation engine for background processes, data transformations, and integrations. They run server-side without user interaction.
+## Overview
 
-## What Workflows Do
+Glide workflows automate actions in response to triggers. There are two categories:
 
-Workflows automate tasks that would otherwise require manual work:
-- Send notifications when data changes
-- Process data in bulk using loops
-- Connect to external APIs and services
-- Run scheduled reports or cleanup tasks
-- Transform and move data between tables
-- Multi-step business processes
+| Category | Runs On | Trigger Source | Example |
+|----------|---------|----------------|---------|
+| **App Interactions** | User's device | User action in app | Button click → navigate |
+| **Server-Side Workflows** | Glide servers | External events or schedule | Webhook → add row |
 
-## When to Use Workflows
+## Workflow Types
 
-- **Event-driven automation**: "When a new order is created, send email confirmation"
-- **Scheduled tasks**: "Every Monday at 9am, generate weekly report"
-- **Bulk processing**: "For each pending invoice, calculate total and send reminder"
-- **External integrations**: "Sync data from external API to Glide table"
-- **Data transformation**: "When spreadsheet is uploaded, parse and distribute to multiple tables"
+### 1. App Interactions (Client-Side)
 
-## Accessing Workflows
+**Trigger**: User action (button click, screen open, form submit)
+**Location**: Created via Layout Editor → Component → Actions
 
-In Glide Builder:
-1. Click **Workflows** tab in the top navigation
-2. Click **"+ New Workflow"** to create
-3. Each workflow has:
-   - **Name** - descriptive label
-   - **Trigger** - what starts the workflow
-   - **Steps** - nodes that execute in sequence
+Key characteristics:
+- Execute immediately on user action
+- Run on the user's device
+- Limited to actions that can happen client-side
+- Can trigger server-side workflows via "Trigger Workflow" action
 
-## Triggers
+Common App Interaction actions:
+- Navigate to screen
+- Show/hide component
+- Set column value
+- Open URL
+- Send email (via device)
+- Trigger Workflow (bridges to server-side)
 
-Triggers determine when a workflow runs.
+### 2. Schedule Workflows (Server-Side)
 
-### Event Triggers
+**Trigger**: Time-based schedule
+**Location**: Workflows tab
 
-**Row Added**
-- Runs when a new row is created in a table
-- Access the new row's data in workflow steps
-- Use case: Send welcome email when user signs up
+Schedule options:
+| Frequency | Configuration |
+|-----------|---------------|
+| Every 5/15/30 minutes | Automatic |
+| Every hour | Automatic |
+| Every day | Select days + time |
+| Every week | Select day + time |
+| Every month | Select date (1-31) + time |
 
-**Row Updated**
-- Runs when any column in a row changes
-- Can filter to specific column changes
-- Use case: Notify manager when order status changes to "Shipped"
+Use cases:
+- Daily report generation
+- Periodic data sync
+- Scheduled notifications
+- Cleanup/maintenance tasks
 
-**Row Deleted**
-- Runs when a row is removed from a table
-- Can access the deleted row's data
-- Use case: Log deletions for audit trail
+### 3. Webhook Workflows (Server-Side)
 
-**Webhook**
-- Runs when external service sends HTTP request to webhook URL
-- Receives POST data as workflow input
-- Use case: Stripe payment webhook triggers order fulfillment
+**Trigger**: HTTP POST request to unique URL
+**Location**: Workflows tab
 
-### Scheduled Triggers
+Receives:
+- **Request body** - JSON payload
+- **Request headers** - HTTP headers
+- **Query parameters** - URL query string
 
-**Schedule**
-- Runs on a recurring schedule (hourly, daily, weekly, monthly)
-- Set specific time and timezone
-- Use case: Every Sunday at midnight, archive completed tasks
+Use cases:
+- External system integration (Shopify, Stripe, Zapier)
+- API endpoint for third parties
+- IoT device data ingestion
 
-**Custom Schedule (Cron)**
-- Advanced scheduling using cron expressions
-- Full control over timing
-- Use case: `0 9 * * 1-5` = 9am weekdays only
+### 4. Manual Workflows (Server-Side)
 
-### Manual Triggers
+**Trigger**: App Interaction using "Trigger Workflow" action
+**Location**: Workflows tab
 
-**Button Action**
-- Triggered by user clicking a button in the app
-- Useful for on-demand processing
-- Use case: "Generate Report" button runs export workflow
+Features:
+- Define input variables
+- Variables passed from app screen
+- Bridge between client action and server processing
 
-**Form Submission**
-- Triggered when form is submitted
-- Access form data in workflow
-- Use case: After contact form submission, create task and notify team
+Use cases:
+- Complex operations that need server resources
+- Operations requiring loops/conditions
+- Background processing after user action
 
-## Workflow Nodes
+### 5. Email Workflows (Server-Side)
 
-Nodes are the building blocks of workflows. They execute sequentially from top to bottom.
+**Trigger**: Email received at Glide-provided address
+**Location**: Workflows tab
 
-### Query Node
+Available variables:
+- From, To, Subject, Body
+- HTML Body, Plain Text Body
+- Attachments (as URLs)
+- Date received
 
-Fetch data from Glide tables to use in the workflow.
+Use cases:
+- Email-to-database logging
+- Support ticket creation
+- Lead capture from form submissions
+- Email parsing and automation
 
-**Configuration:**
-- **Table**: Which table to query
-- **Filters**: Optional conditions to narrow results (e.g., Status = "Active")
-- **Limit**: Max rows to return (useful for testing)
-- **Columns**: Which columns to include (all by default)
+### 6. Slack Workflows (Server-Side)
 
-**Output:**
-Returns an array of row objects: `[{col1: val1, col2: val2}, ...]`
+**Trigger**: Slack event
+**Location**: Workflows tab
+**Prerequisite**: Slack integration enabled
 
-**Common uses:**
-- Get all pending orders to process
-- Find users matching criteria
-- Fetch related data for processing
+Available variables:
+- Channel ID/Name
+- User ID/Name
+- Message text
+- Thread info
+- Event type
 
-**Example pattern:**
+Use cases:
+- Message logging
+- Slack-to-Glide data sync
+- Bot responses
+- Team notifications
+
+## Server-Side Exclusive Features
+
+### Loops
+
+Iterate over table rows in server-side workflows.
+
 ```
-Query Node → Get Orders where Status = "Pending"
+Loop: Over "Orders" table
+  Filter: status = "Pending"
+  
+  For each row:
+    → Update Row (set processed = true)
+    → Send Email (order confirmation)
+```
+
+**Best practices:**
+- Always filter loops (never process entire table)
+- Be mindful of execution time
+- Consider rate limits on external APIs
+
+### Conditions (Branches)
+
+Create branching logic paths.
+
+```
+Condition:
+  Path 1: IF amount > 1000 → Require approval
+  Path 2: IF amount > 100  → Auto-approve, notify manager
+  Path 3: ELSE             → Auto-approve
+```
+
+**Key rule**: Evaluated **left-to-right**, first match wins.
+
+Put most specific conditions first, general conditions last.
+
+## Common Workflow Nodes
+
+### Data Nodes
+
+| Node | Description |
+|------|-------------|
+| Add Row | Create new row in table |
+| Update Row | Modify existing row |
+| Delete Row | Remove row |
+| Query JSON | Parse JSON with JSONata |
+| Query Table | Find rows matching criteria |
+
+### Communication Nodes
+
+| Node | Description |
+|------|-------------|
+| Send Email | Send email via Glide |
+| Send SMS | Send text message |
+| Push Notification | Send to app users |
+| Send Slack Message | Post to Slack channel |
+
+### Integration Nodes
+
+| Node | Description |
+|------|-------------|
+| HTTP Request | Call external API |
+| Trigger Workflow | Call another workflow |
+| Google Sheets | Interact with Sheets |
+
+### Logic Nodes
+
+| Node | Description |
+|------|-------------|
+| Condition | Branch based on criteria |
+| Loop | Iterate over rows |
+| Wait | Pause execution |
+| Set Variable | Create/modify variable |
+
+### AI Nodes
+
+| Node | Description |
+|------|-------------|
+| Generate Text | AI text generation |
+| Classify Text | AI categorization |
+| Extract Data | AI data extraction |
+
+## JSONata Reference
+
+For parsing JSON in Query JSON nodes:
+
+### Basic Syntax
+
+```jsonata
+name                    // Simple field
+customer.email          // Nested field
+items[0]                // First array item
+items[-1]               // Last array item
+items[*].name           // All names from array
+```
+
+### Common Functions
+
+```jsonata
+$count(items)           // Array length
+$sum(items.price)       // Sum values
+$average(scores)        // Average
+$string(number)         // To string
+$number(string)         // To number
+$now()                  // Current time
+$lowercase(text)        // Lowercase
+$trim(text)             // Remove whitespace
+```
+
+### Filtering
+
+```jsonata
+items[price > 100]              // Items over $100
+items[status = "active"]        // Active only
+orders[total > 0].id            // IDs of non-zero orders
+```
+
+## Workflow Patterns
+
+### Pattern: Webhook → Database
+
+```
+Trigger: Webhook (receives order data)
   ↓
-Loop Node → Process each order
-```
-
-### Loop Node
-
-Iterate over an array, running child nodes for each item.
-
-**Configuration:**
-- **Array**: The data to loop over (typically from Query Node)
-- **Item Name**: Reference name for current item (e.g., "order")
-- **Max Iterations**: Safety limit to prevent runaway loops
-
-**How it works:**
-- Takes an array as input
-- Runs all child nodes once for each array item
-- Inside loop, access current item data via item reference
-- Child nodes are indented under the loop
-
-**Common uses:**
-- Process each row from a Query
-- Send email to each user in a list
-- Create multiple rows based on template
-
-**Example:**
-```
-Query → Get pending tasks
+Query JSON: Extract orderId, customerEmail, total
   ↓
-Loop over tasks (item: "task")
-  ├─ Condition → If task.priority = "High"
-  │    └─ Send Email → Notify manager
-  └─ Update Row → Mark task as "Processed"
-```
-
-### Condition Node
-
-Add if/then logic to control workflow execution.
-
-**Configuration:**
-- **Condition**: Expression that evaluates to true/false
-- **Then steps**: Nodes that run if condition is true
-- **Else steps**: Nodes that run if condition is false
-
-**Conditions can check:**
-- Field values: `status = "approved"`
-- Comparisons: `total > 100`
-- Existence: `email is not empty`
-- Combinations: `priority = "High" AND dueDate < today`
-
-**Common uses:**
-- Skip processing if data doesn't meet criteria
-- Branch workflow based on values
-- Prevent errors (e.g., only send email if email field isn't empty)
-- Implement business rules
-
-**Example:**
-```
-Condition → If order.total > 1000
-  THEN:
-    └─ Send Email → Notify VIP sales team
-  ELSE:
-    └─ Send Email → Notify standard sales team
-```
-
-### Set Column Node
-
-Extract or transform data, often used to prepare data for other nodes.
-
-**Configuration:**
-- **Input**: The source data (object or array)
-- **Column/Field**: Which field to extract
-- **Operation**: Extract, Transform, Calculate
-
-**Critical for Query Result Processing:**
-
-When you query a table, you get an array of objects:
-```json
-[
-  {email: "alice@example.com", name: "Alice", status: "Active"},
-  {email: "bob@example.com", name: "Bob", status: "Active"}
-]
-```
-
-To extract just the emails into a simple array:
-```
-Query Node → Get users where status = "Active"
+Add Row: Create order in Orders table
   ↓
-Set Column Node → Extract "email" column
+Send Email: Order confirmation to customer
+```
+
+### Pattern: Scheduled Report
+
+```
+Trigger: Schedule (daily at 9am)
   ↓
-Result: ["alice@example.com", "bob@example.com"]
-```
-
-**Why this matters:**
-- Many nodes expect simple arrays, not arrays of objects
-- Email nodes want string array of addresses
-- API calls may need specific field formats
-
-**Common pattern: Query → Extract → Loop**
-```
-Query → Get customers
+Query Table: Get yesterday's orders
   ↓
-Set Column → Extract customer.email
+Loop: Calculate totals
   ↓
-Loop → For each email
-    └─ Send Email → email
-```
-
-### Create Row Node
-
-Add a new row to a table.
-
-**Configuration:**
-- **Table**: Target table
-- **Column Values**: Data for each column
-
-**Common uses:**
-- Log workflow execution
-- Create derived records
-- Duplicate rows with modifications
-
-**Example:**
-```
-Trigger: Order created
+Generate Text (AI): Create summary
   ↓
-Create Row → Add row to "Order Logs" table
-  - Order ID: {trigger.orderID}
-  - Timestamp: {now}
-  - Status: "Processed"
+Send Email: Report to managers
 ```
 
-### Update Row Node
+### Pattern: Approval Flow
 
-Modify an existing row in a table.
-
-**Configuration:**
-- **Table**: Which table
-- **Row**: Which row to update (by ID or from loop item)
-- **Column Values**: New values to set
-
-**Common uses:**
-- Mark records as processed
-- Update status after action
-- Calculate and store derived values
-
-**Example:**
 ```
-Loop over pending orders (item: "order")
-  ├─ API Call → Get shipping cost
-  └─ Update Row → order
-      - Shipping Cost: {API response}
-      - Status: "Quoted"
-```
-
-### Delete Row Node
-
-Remove a row from a table.
-
-**Configuration:**
-- **Table**: Which table
-- **Row**: Which row to delete (by ID or from loop item)
-
-**Common uses:**
-- Clean up temporary data
-- Archive old records
-- Remove duplicates
-
-### Send Email Node
-
-Send email notifications.
-
-**Configuration:**
-- **To**: Recipient email(s) - can be array from Set Column
-- **Subject**: Email subject line
-- **Body**: Email content (plain text or HTML)
-- **From**: Optional custom sender name
-
-**Works with arrays:**
-```
-Set Column → Extract emails from query result
+Trigger: Manual (from app button)
   ↓
-Send Email → To: {extracted emails array}
+Condition:
+  Path 1: amount > 10000
+    → Add Row: Create approval request
+    → Send Email: Notify approvers
+  Path 2: else
+    → Update Row: Set approved = true
+    → Send Email: Confirmation
 ```
 
-**Common uses:**
-- Notify users of status changes
-- Send bulk announcements
-- Alert admins of errors
-
-### API Request Node
-
-Call external web services via HTTP.
-
-**Configuration:**
-- **Method**: GET, POST, PUT, DELETE
-- **URL**: API endpoint
-- **Headers**: Authentication, Content-Type, etc.
-- **Body**: Request payload (for POST/PUT)
-
-**Response handling:**
-- Store response in variable
-- Use response data in subsequent nodes
-- Parse JSON responses
-
-**Common uses:**
-- Fetch data from external API
-- Send data to external system
-- Trigger webhooks in other services
-- Integration with Stripe, SendGrid, etc.
-
-**Example:**
-```
-Trigger: Form submitted
-  ↓
-API Request → POST to Slack webhook
-  - URL: https://hooks.slack.com/...
-  - Body: {"text": "New form submission from {name}"}
-```
-
-### JavaScript Node
-
-Run custom JavaScript code for complex logic.
-
-**Use cases:**
-- Advanced data transformation
-- Complex calculations
-- Custom parsing logic
-- Validation rules
-
-**Has access to:**
-- Workflow variables
-- Input data
-- JavaScript standard library
-
-**Example:**
-```javascript
-// Parse and validate phone number
-const phone = input.phoneNumber;
-const cleaned = phone.replace(/\D/g, '');
-return cleaned.length === 10 ? cleaned : null;
-```
-
-### Wait/Delay Node
-
-Pause workflow execution.
-
-**Configuration:**
-- **Duration**: How long to wait (seconds, minutes, hours, days)
-
-**Common uses:**
-- Rate limiting (wait between API calls)
-- Scheduled follow-ups (wait 3 days, then send reminder)
-- Throttling bulk operations
-
-**Example:**
-```
-Loop over 1000 contacts
-  ├─ Send Email → contact
-  └─ Wait → 1 second (prevent rate limiting)
-```
-
-## Advanced Patterns
-
-### Query → Extract Column → Loop Pattern
-
-The most common workflow pattern for bulk processing:
+### Pattern: External API Sync
 
 ```
-Query Node → Get all users where status = "Active"
-  Output: [{id: 1, email: "a@x.com", name: "Alice"}, ...]
+Trigger: Schedule (every hour)
   ↓
-Set Column Node → Extract "email" field
-  Output: ["a@x.com", "b@x.com", "c@x.com"]
+HTTP Request: GET external API
   ↓
-Loop Node → For each email
-  Item: "email"
+Query JSON: Parse response
   ↓
-  Send Email Node → To: {email}
-    Subject: "Weekly Newsletter"
+Loop: Over items in response
+  ↓
+  Condition:
+    → IF exists in Glide: Update Row
+    → ELSE: Add Row
 ```
 
-**Why extract the column?**
-- Query returns full row objects
-- Most action nodes (Email, API) need simple values
-- Extracting creates a clean array of just the values you need
-
-### Nested Loops for Multi-Level Processing
-
-Process hierarchical data by nesting loops:
+### Pattern: Email to Ticket
 
 ```
-Query → Get all projects
+Trigger: On Email
   ↓
-Loop over projects (item: "project")
+Add Row: Create ticket
+  - Subject → Title
+  - Body → Description
+  - From → Requester
+  - Status = "New"
   ↓
-  Query → Get tasks where projectID = {project.id}
-    ↓
-  Loop over tasks (item: "task")
-    ↓
-    Condition → If task.status = "Overdue"
-      ↓
-      Send Email → Notify {task.assignee}
+Send Email: Auto-reply to sender
+  ↓
+Send Slack: Notify support channel
 ```
 
-### Error Handling with Conditions
+## Error Handling
 
-Prevent workflow failures by validating data:
+### Common Issues
 
-```
-Trigger: Form submission
-  ↓
-Condition → If email is not empty
-  THEN:
-    └─ Send Email → {email}
-  ELSE:
-    └─ Create Row → Error log
-        - Message: "Missing email"
-        - Form ID: {form.id}
-```
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Workflow not triggering | Not enabled | Enable in properties |
+| Webhook returns error | Invalid payload | Check JSONata queries |
+| Loop timeout | Too many rows | Add filters |
+| Email not sending | Invalid address | Validate email format |
+| Slack failing | Bot not in channel | Invite bot to channel |
 
-### Batch Processing with Limits
+### Debugging Strategies
 
-Test with small batches before running on full dataset:
+1. **Check run history** - View past executions and errors
+2. **Add logging nodes** - Insert "Add Row" to log table
+3. **Test incrementally** - Build and test one node at a time
+4. **Validate data** - Use Query JSON to inspect payloads
 
-```
-Query → Get pending invoices
-  - Limit: 10 (for testing)
-  ↓
-Loop over invoices
-  ↓
-  API Request → Send to accounting system
-  Wait → 500ms
-  Update Row → Mark as "Synced"
-```
+## Best Practices
 
-Once tested, remove or increase the limit.
+### General
 
-### Conditional Branching by Type
+1. **Name workflows clearly** - "Daily Sales Report" not "Workflow 1"
+2. **Document complex logic** - Add notes explaining branches
+3. **Test before deploying** - Use test data first
+4. **Monitor executions** - Check run history regularly
 
-Handle different record types in one workflow:
+### Performance
 
-```
-Trigger: Row added to "Notifications" table
-  ↓
-Condition → If notificationType = "Email"
-  THEN:
-    └─ Send Email
-  ELSE:
-    Condition → If notificationType = "SMS"
-      THEN:
-        └─ API Request → Twilio SMS
-      ELSE:
-        └─ Create Row → Error log
-```
+1. **Filter loops aggressively** - Never iterate entire tables
+2. **Batch external calls** - Minimize API requests
+3. **Use conditions early** - Short-circuit unnecessary processing
+4. **Consider timing** - Schedule heavy jobs during low-usage hours
 
-### Data Aggregation
+### Security
 
-Collect results from loop and store:
+1. **Don't expose secrets** - Use environment variables
+2. **Validate webhook data** - Check for expected structure
+3. **Limit webhook access** - Consider authentication headers
+4. **Be careful with loops** - Avoid infinite loops
 
-```
-Query → Get all orders from this month
-  ↓
-JavaScript Node:
-  // Calculate total revenue
-  let total = 0;
-  for (const order of input.orders) {
-    total += order.amount;
-  }
-  return {total, count: input.orders.length};
-  ↓
-Update Row → Monthly Stats table
-  - Revenue: {total}
-  - Order Count: {count}
-```
+## Integration with App
 
-## Testing Workflows
+### From App to Workflow
 
-### Test Mode
+1. Create Manual workflow with input variables
+2. Add Button to screen
+3. Add "Trigger Workflow" action
+4. Map screen data to input variables
 
-Before enabling a workflow for production:
+### From Workflow to App
 
-1. **Set Row Limits**: Add limit to Query nodes (e.g., 5 rows)
-2. **Use Test Data**: Create test rows to trigger workflow
-3. **Check Execution Logs**: View workflow runs in history
-4. **Verify Output**: Check that data changes are correct
+1. Workflow updates database (Add/Update Row)
+2. App displays updated data
+3. Use Push Notification for immediate alerts
 
-### Execution History
+## Workflow Limits
 
-In Workflows tab:
-- Click on a workflow to see execution history
-- Each run shows:
-  - Timestamp
-  - Trigger source
-  - Status (Success/Failed)
-  - Execution time
-  - Error messages (if failed)
+- Execution time limits (varies by plan)
+- API call limits for external requests
+- Row processing limits in loops
+- Email/SMS sending limits
 
-### Debugging Failed Workflows
-
-If a workflow fails:
-
-1. **Check error message** in execution history
-2. **Common issues:**
-   - Missing required fields
-   - API authentication failed
-   - Invalid data format
-   - Timeout (workflow took too long)
-   - Rate limit exceeded
-3. **Add logging**: Use Create Row to log progress
-4. **Add conditions**: Validate data before risky operations
-5. **Test incrementally**: Enable one node at a time
-
-### Logging Pattern for Debugging
-
-```
-Query → Get pending items
-  ↓
-Create Row → Workflow Log
-  - Message: "Found {count} items to process"
-  - Timestamp: {now}
-  ↓
-Loop over items
-  ↓
-  [Process item]
-  ↓
-  Create Row → Workflow Log
-    - Message: "Processed item {item.id}"
-```
-
-## Performance & Limits
-
-### Quota Costs
-
-Workflows consume update quota:
-- Each row read: 0.001 updates
-- Each row write: 0.01 updates
-- API calls: May have their own limits
-
-### Timeouts
-
-- Workflows timeout after 5 minutes
-- For long-running tasks, use Wait nodes strategically
-- Consider splitting into multiple workflows
-
-### Rate Limiting
-
-When calling external APIs:
-- Add Wait nodes between calls
-- Batch requests when possible
-- Handle rate limit errors gracefully
-
-### Best Practices
-
-1. **Test with limits**: Use Query limits during development
-2. **Add conditions**: Validate data before processing
-3. **Log progress**: Create audit trail for debugging
-4. **Handle errors**: Use conditions to catch edge cases
-5. **Batch operations**: Process in chunks if dataset is large
-6. **Use indexes**: Filter queries to reduce data scanned
-7. **Avoid infinite loops**: Always set max iterations on loops
-8. **Monitor quota**: Track update usage in large workflows
-
-## Common Use Cases
-
-### Send Welcome Email on Signup
-
-```
-Trigger: Row added to Users table
-  ↓
-Condition → If user.email is not empty
-  THEN:
-    Send Email
-      - To: {user.email}
-      - Subject: "Welcome to {appName}!"
-      - Body: "Hi {user.name}, thanks for joining..."
-```
-
-### Weekly Digest Email
-
-```
-Trigger: Schedule (Every Monday 9am)
-  ↓
-Query → Get users where emailPreference = "Weekly"
-  ↓
-Set Column → Extract email
-  ↓
-Query → Get new content from last 7 days
-  ↓
-JavaScript → Format content into HTML
-  ↓
-Send Email
-  - To: {user emails array}
-  - Subject: "Your Weekly Digest"
-  - Body: {formatted HTML}
-```
-
-### Sync External Data
-
-```
-Trigger: Schedule (Every hour)
-  ↓
-API Request → GET from external API
-  - URL: https://api.example.com/products
-  ↓
-Loop over API response items
-  ↓
-  Query → Check if product exists (by externalID)
-  ↓
-  Condition → If product exists
-    THEN:
-      Update Row → Update price, stock
-    ELSE:
-      Create Row → Add new product
-```
-
-### Order Fulfillment
-
-```
-Trigger: Order status updated to "Paid"
-  ↓
-Condition → If order.total > 0
-  THEN:
-    API Request → POST to shipping service
-      - Create shipping label
-    ↓
-    Update Row → order
-      - Tracking Number: {API response}
-      - Status: "Shipped"
-    ↓
-    Send Email → order.customerEmail
-      - Subject: "Order shipped!"
-      - Body: "Track your package: {trackingNumber}"
-```
-
-### Data Cleanup
-
-```
-Trigger: Schedule (Daily at 2am)
-  ↓
-Query → Get rows where createdAt < 90 days ago AND status = "Temporary"
-  ↓
-Loop over old rows
-  ↓
-  Delete Row → item
-  ↓
-Create Row → Audit Log
-  - Message: "Deleted {count} old temporary records"
-  - Timestamp: {now}
-```
-
-## Workflows vs. Computed Columns
-
-Know when to use each:
-
-| Feature | Computed Column | Workflow |
-|---------|----------------|----------|
-| **Timing** | Instant (during app use) | Background (delayed) |
-| **Use case** | Calculations, lookups | Automation, notifications |
-| **Scope** | Single row | Multiple rows, external systems |
-| **Examples** | Total = Price × Qty | Send email when status changes |
-
-**Use computed columns when:**
-- Calculation based on current row
-- Need instant result in UI
-- Simple logic (math, if-then, lookup)
-
-**Use workflows when:**
-- Triggering external actions
-- Processing multiple rows
-- Sending notifications
-- Scheduled tasks
-- Complex multi-step processes
-
-## Summary
-
-Workflows are powerful for:
-- ✅ Event-driven automation
-- ✅ Scheduled tasks
-- ✅ Bulk data processing
-- ✅ External integrations
-- ✅ Multi-step business processes
-
-Key patterns:
-- **Query → Extract → Loop** for bulk processing
-- **Condition nodes** for validation and branching
-- **Set Column** to convert query results to arrays
-- **Wait nodes** for rate limiting
-- **Logging** for debugging
-
-Always test with limits before running on production data.
+Check Glide documentation for current limits on your plan.

@@ -5,7 +5,46 @@ description: Get unstuck by providing expert tips that the plugin learns from an
 
 # Tip Command - Self-Learning from Expert Feedback
 
-This command allows you (the expert Glide app builder) to provide tips when the plugin gets stuck. The plugin will attempt to follow your tip, and if successful, will update its own skills with what it learned.
+This command allows you (the expert Glide app builder) to provide tips when the plugin gets stuck. The plugin will attempt to follow your tip, and if successful, will update its own knowledge with what it learned.
+
+## ⚠️ CRITICAL: Where Learnings Can Be Stored
+
+**Learnings can ONLY be added to these locations:**
+
+### 1. Existing Skill Files (Domain Knowledge)
+Update existing skills in `skills/` - NEVER create new skill folders:
+```
+skills/glide/SKILL.md           ← Overall workflow, coordination
+skills/data-modeling/SKILL.md   ← Tables, columns, data types
+skills/computed-columns/SKILL.md ← Math, If-Then-Else, etc.
+skills/design/SKILL.md          ← Screen design principles
+skills/api/SKILL.md             ← API usage
+skills/app-sharing/SKILL.md     ← Privacy, auth, publishing
+skills/workflows/SKILL.md       ← Automation
+skills/ai/SKILL.md              ← AI columns
+skills/learnings-log/SKILL.md   ← Historical record
+```
+
+### 2. Existing Agent Procedure Folders (How-To Knowledge)
+Add new procedures ONLY within these existing agent directories:
+```
+agents/data/procedures/           ← Data operations how-to
+agents/screen-builder/procedures/ ← Screen creation how-to
+agents/component-builder/procedures/ ← Component config how-to
+```
+
+### 3. Browser Selectors (UI Element Reference)
+Add new selector docs in:
+```
+browser/selectors/               ← UI element locations
+```
+
+### ❌ NEVER Do These:
+- ❌ Create new top-level agent folders
+- ❌ Create new skill folders
+- ❌ Create standalone procedure files outside agent folders
+- ❌ Modify the orchestrator (it coordinates, doesn't hold domain knowledge)
+- ❌ Modify the browser executor (it's a dumb execution layer)
 
 ## Workflow
 
@@ -64,9 +103,12 @@ If the tip was successful (fully or partially), launch the `skill-learner` agent
 
 The skill-learner agent will:
 1. Analyze what was learned
-2. Determine which skill(s) should be updated
-3. Identify what specific knowledge should be added
-4. Update the relevant skill files
+2. Determine the correct location for this knowledge:
+   - **If it's HOW to do something in the UI** → Add/update a procedure in the relevant agent folder
+   - **If it's WHAT something is or design guidance** → Update a skill file
+   - **If it's about UI element locations** → Update browser selectors
+3. Add the knowledge to the appropriate existing file/folder
+4. **NEVER create new agent folders or skill folders**
 
 ### Step 6: Confirm Updates
 

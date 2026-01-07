@@ -33,7 +33,7 @@ Example: Calculate total with tax
 | **Image** | Image URL | Profile photos, product images |
 | **Date & Time** | Timestamps | Due dates, created at |
 | **URL** | Web links | External resources |
-| **Row ID** | Unique identifier | Auto-generated ID |
+| **Row ID** | Unique identifier | **Primary key** - add to every table first |
 | **Rich Text** | Formatted text | Long descriptions |
 | **Email** | Email addresses | Contact info |
 | **Phone Number** | Phone format | Contact info |
@@ -143,14 +143,113 @@ The Type dropdown is organized into categories:
 
 Type in the search box to filter.
 
+## Row ID Columns: The Primary Key System
+
+**CRITICAL BEST PRACTICE**: Add a Row ID column to every table BEFORE creating relations.
+
+### What Row ID Columns Are
+
+Row ID columns are Glide's primary key system:
+- **Unique identifier** for each row in a table
+- **Automatically generated** when you add the column
+- **Never changes** for a row (stable identifier)
+- **Required for reliable relations** between tables
+
+### How to Add Row ID Column
+
+1. Navigate to the table in Data Editor
+2. Add a new column (CMD+SHIFT+ENTER or click column header → "Add column right")
+3. Name it "Row ID" (or similar - "ID", "Record ID")
+4. Select column type: **Basic → Row ID**
+5. Save
+6. **The column will appear as the first column** in the table
+
+### Why Add Row ID First
+
+**Before creating relations:**
+```
+✅ RIGHT workflow:
+1. Create tables
+2. Add Row ID column to each table
+3. Add foreign key columns (text columns to hold IDs)
+4. Populate foreign key columns with Row ID values
+5. Create relation columns
+
+❌ WRONG workflow:
+1. Create tables
+2. Try to create relations immediately
+3. Relations fail or use unreliable auto-generated $rowID
+```
+
+### Row ID vs $rowID
+
+| Row ID Column | $rowID (auto-generated) |
+|---------------|-------------------------|
+| **Explicit** - you create it | **Implicit** - Glide adds it |
+| **Visible** in Data Editor | **Hidden** (special column) |
+| **Recommended** for relations | **Avoid** for relations |
+| **Reliable** and stable | Can be less predictable |
+
+**Best practice:** Always use explicit Row ID columns that you create, not Glide's auto-generated $rowID values.
+
+### Example: Setting Up CRM Tables with Row IDs
+
+**Step 1: Create tables and add Row ID to each**
+```
+Companies table:
+  - Add column: "Row ID" (type: Row ID) ← Do this FIRST
+
+Contacts table:
+  - Add column: "Row ID" (type: Row ID) ← Do this FIRST
+
+Deals table:
+  - Add column: "Row ID" (type: Row ID) ← Do this FIRST
+```
+
+**Step 2: Add foreign key columns**
+```
+Contacts table:
+  - Add column: "companyId" (type: Text) ← Will hold Row ID from Companies
+
+Deals table:
+  - Add column: "contactId" (type: Text) ← Will hold Row ID from Contacts
+  - Add column: "companyId" (type: Text) ← Will hold Row ID from Companies
+```
+
+**Step 3: Create relations**
+```
+Contacts table:
+  - Relation: "Company" → Match Contacts.companyId to Companies.Row ID
+
+Companies table:
+  - Relation: "Contacts" → Match Companies.Row ID to Contacts.companyId
+  - Relation: "Deals" → Match Companies.Row ID to Deals.companyId
+
+Deals table:
+  - Relation: "Contact" → Match Deals.contactId to Contacts.Row ID
+  - Relation: "Company" → Match Deals.companyId to Companies.Row ID
+```
+
+**Result:** Reliable, explicit relationships between all tables.
+
 ## Relation & Lookup Pattern
 
 This is the most common pattern for connecting data:
 
+### Prerequisites: Add Row ID Columns First
+
+**Before creating any relations:**
+1. Add a Row ID column to each table involved in the relationship
+2. Add foreign key columns (type: Text) to hold the Row ID values
+3. Populate the foreign key columns with Row ID values from related tables
+
+See "Row ID Columns: The Primary Key System" section above for detailed guidance.
+
 ### Step 1: Create Relation Column
 - Creates a link between two tables
-- Match rows based on a key column
+- **Match foreign key column → Row ID column** (recommended pattern)
 - Can be single or multiple relations
+- Example: Match `Tasks.projectId` (text) → `Projects.Row ID` (Row ID column)
 
 ### Step 2: Create Lookup Column
 - References the Relation column
@@ -161,6 +260,8 @@ This is the most common pattern for connecting data:
 - References the Relation column
 - Aggregates values: Count, Sum, Average, Max, Min, etc.
 - Example: Count of tasks assigned to employee
+
+**IMPORTANT**: Rollups should almost always operate on a Relation column, not directly on a table. This ensures the rollup only aggregates related rows, not all rows in the target table. See the `computed-columns` skill for detailed rollup guidance.
 
 ## Math Column Syntax
 
@@ -263,12 +364,14 @@ See the `api` skill for detailed API usage.
 
 ## Best Practices
 
-1. **Name columns clearly** - Use descriptive names that indicate purpose
-2. **Create intermediate columns** - Break complex calculations into steps
-3. **Use Relations wisely** - They're the foundation of data relationships
-4. **Consider user-specific columns** - For per-user data storage
-5. **Document your data model** - Use the Description field
-6. **Test calculations** - Verify with sample data before going live
+1. **Add Row ID columns first** - Add a Row ID column to every table before creating relations
+2. **Name columns clearly** - Use descriptive names that indicate purpose
+3. **Create intermediate columns** - Break complex calculations into steps
+4. **Use Relations wisely** - They're the foundation of data relationships
+5. **Match foreign keys → Row ID columns** - Use explicit Row ID columns, not auto-generated $rowID
+6. **Consider user-specific columns** - For per-user data storage
+7. **Document your data model** - Use the Description field
+8. **Test calculations** - Verify with sample data before going live
 
 ## Documentation
 

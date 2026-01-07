@@ -27,6 +27,33 @@ Each learning entry should include:
 
 ## Learning Entries
 
+### 2026-01-06: Rollups Should Operate on Relations, Not Whole Tables
+
+**Context**: Attempting to add rollup columns to a CRM app to show insights like count of contacts per company and sum of deal amounts. Was about to create rollups that would operate directly on entire tables, which would have shown global totals instead of per-company totals.
+
+**Tip Provided**:
+> "Rollups should mainly be used in coordination with a relation or query column and rarely the whole table. For example using a rollup and selecting a table and a column in that table will count the number of rows in that table. If you did that against a relation it would count the number of related items it found which is much more useful in many cases. Ex Orders > Order items. If i related from the order to order items, i could then count the number of order items in that order versus counting all order items in the table."
+
+**Skills Updated**:
+- `computed-columns/SKILL.md` - Section: "Rollup Columns"
+  - Added: "CRITICAL CONCEPT" callout that rollups should operate on Relation columns
+  - Added: Explanation of why (rollups on relations auto-filter to related rows)
+  - Added: "Why Use Relations with Rollups" section with pattern diagram
+  - Added: Example showing WRONG vs RIGHT approach for Order Items counting
+  - Added: Complete CRM example matching the user's actual use case (Companies → Contacts/Deals)
+  - Added: "When to Use Rollup on Whole Table" section (rare cases like dashboards)
+  - Updated: Setup steps to emphasize creating Relation first
+  - Added: Common Rollup Patterns table with real-world examples
+- `data-modeling/SKILL.md` - Section: "Relation & Lookup Pattern"
+  - Added: IMPORTANT note that rollups should operate on relations, not tables
+  - Added: Cross-reference to computed-columns skill for detailed guidance
+
+**Key Learning**: Rollups should almost always operate on a Relation column, not directly on a table. Rollups on relations automatically filter to only related rows, while rollups on entire tables aggregate ALL rows (rarely useful).
+
+**Impact**: Prevents a critical common mistake that would cause rollups to show meaningless global totals instead of per-row aggregations. This is especially important in CRM apps, order systems, and any app with one-to-many relationships. Makes the Relation → Rollup pattern explicit and teachable.
+
+---
+
 ### 2025-12-31: Action Button Ordering and Multiple Actions
 
 **Context**: Task required adding an email button to send location information. The Edit button was appearing as the primary (leftmost) button, and the new Email Info button was secondary. Needed to understand how action ordering works in Glide.

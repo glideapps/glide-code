@@ -46,7 +46,7 @@ The plugin supports 6 concurrent browser sessions. **Browser automation is slow,
    - Open Users table (or any existing table)
    - Click "Show API"
    - Copy the secret token
-   - Store in `.glide/config.json` under `apiKey`
+   - Keep the token for API operations
 4. **Do this BEFORE spawning data agents** - prevents multiple agents trying to get the key in parallel
 
 **Phase 2: Data Creation (Highly Parallel)**
@@ -158,8 +158,8 @@ Steps (using `build` agent):
 2. Open the "Users" table (or any existing table)
 3. Click "Show API" button
 4. Copy the secret token
-5. Store in `.glide/config.json` under `apiKey`
-6. Pass this to all `data` agents
+5. Keep the token in memory
+6. Pass this to all `data` agents when delegating
 
 **Why**: Data agents need the API key to create tables. Getting it early and once prevents race conditions.
 

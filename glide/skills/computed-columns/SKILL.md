@@ -99,17 +99,88 @@ Example:
 
 Aggregate values across related rows.
 
-Setup:
-1. Create a Rollup column
-2. Select a Relation column (usually a multiple relation)
-3. Choose the aggregation: Count, Sum, Average, Min, Max
-4. Select which column to aggregate (for Sum/Average/Min/Max)
+**CRITICAL CONCEPT**: Rollups should almost always operate on a **Relation column**, not an entire table. This is because rollups on relations automatically filter to only the related rows.
 
-Examples:
-- Count of tasks per project
-- Sum of order amounts per customer
-- Average rating per product
-- Max price in a category
+### Why Use Relations with Rollups
+
+**The pattern:**
+```
+Relation Column → Rollup Column (operates on the relation)
+```
+
+**What happens:**
+- **Rollup on a Relation**: Counts/sums/averages only the rows that are related
+- **Rollup on a Table**: Counts/sums/averages ALL rows in that table (rarely useful)
+
+### Example: Order System
+
+**Tables:**
+- Orders table
+- Order Items table
+
+**Goal:** Count how many items are in each order
+
+**❌ WRONG approach:**
+```
+In Orders table:
+  Rollup column → Select "Order Items" table → Count rows
+
+Result: Every order shows the TOTAL count of all items in the entire table
+```
+
+**✅ RIGHT approach:**
+```
+In Orders table:
+  Step 1: Relation column → Match Order ID to Order Items table
+  Step 2: Rollup column → Select the Relation column → Count
+
+Result: Each order shows only its own item count
+```
+
+### Example: CRM System
+
+**Goal:** In Companies table, show count of contacts and sum of deal amounts
+
+**✅ Correct setup:**
+```
+Companies table:
+  1. Relation: "Related Contacts" → Links to Contacts where Company ID matches
+  2. Rollup: "Contact Count" → Operates on "Related Contacts" relation → Count
+
+  3. Relation: "Related Deals" → Links to Deals where Company ID matches
+  4. Rollup: "Total Deal Amount" → Operates on "Related Deals" relation → Sum of Amount
+```
+
+### When to Use Rollup on Whole Table
+
+Rarely needed, but valid when:
+- You want a constant value (e.g., "Total Users" displayed on every row)
+- You're creating a dashboard row that shows global stats
+
+**Example:**
+```
+Dashboard table (single row):
+  Rollup → Select Users table → Count rows
+  Result: Shows total user count
+```
+
+### Setup Steps
+
+1. **Create a Relation column first** (unless using whole table)
+2. Create a Rollup column
+3. Select the **Relation column** as the source (not the table directly)
+4. Choose the aggregation: Count, Sum, Average, Min, Max
+5. Select which column to aggregate (for Sum/Average/Min/Max)
+
+### Common Rollup Patterns
+
+| Pattern | Relation | Rollup Configuration |
+|---------|----------|---------------------|
+| Count tasks per project | Project → Tasks | Count rows in relation |
+| Sum order amounts per customer | Customer → Orders | Sum of "Amount" column |
+| Average rating per product | Product → Reviews | Average of "Rating" column |
+| Max price in category | Category → Products | Max of "Price" column |
+| Count activities per contact | Contact → Activities | Count rows in relation |
 
 ## Template Columns
 

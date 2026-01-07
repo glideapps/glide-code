@@ -5,111 +5,101 @@ description: Start working with Glide - includes interactive login, app selectio
 
 # Glide Start Command
 
-This command guides you through the initial setup for working with Glide apps, including authentication and app selection.
+This command guides you through the initial setup for working with Glide apps.
 
-**IMPORTANT: Read the main `glide` skill first** - it contains the workflow, agent coordination, and parallel building strategy needed to understand app building.
+## ⚠️ FIRST: Read the Orchestrator
 
-## Workflow
+**Before doing anything, read the orchestrator documentation:**
 
-### Step 0: Read the Glide Skill
+```
+orchestrator/ORCHESTRATOR.md
+```
 
-**Before doing anything else, read the main `glide` skill.**
+This is the central coordination point that explains:
+- Build phases and workflow
+- How to delegate to sub-agents
+- What each agent is responsible for
 
-This skill covers:
-- Overall build workflow and phases
-- Parallel building strategy (how to use 6 browsers effectively)
-- Agent responsibilities
-- Key patterns and rules
-- Browser automation details
+## Quick Start Flow
 
-This context is essential for understanding how to orchestrate the setup and build process.
+### Step 1: Check Authentication
 
-### Step 1: Check for existing authentication
+Use browser to check if logged in:
 
-Check `.glide/config.json` to see if the user is already authenticated.
+```
+1. Navigate to https://go.glideapps.com
+2. Take snapshot
+3. If "Sign In" visible → User needs to log in
+4. If "New app" visible → Already authenticated
+```
 
-If the file exists with authentication data or an authenticated browser profile exists:
-- Skip to Step 3 (app selection)
-- Use the stored authentication for subsequent operations
+If not logged in, tell the user:
+> "Please log in to Glide in the browser window. I'll detect when you're done."
 
-### Step 2: Interactive Login to Glide
+### Step 2: Determine Task
 
-Guide the user through logging in interactively:
+Ask the user what they want to do:
+- **"Build a new app"** → Start with orchestrator Phase 1 (Clarify)
+- **"Work on existing app"** → Ask for app URL, then determine what to do
+- **"Import data"** → Delegate to data-agent
+- **"Review design"** → Delegate to design-review agent
 
-1. **Open browser**: Use `mcp__plugin_glide_browser-1__browser_navigate` to go to `https://go.glideapps.com`
+### Step 3: Delegate to Orchestrator
 
-2. **Check login status**: Use `mcp__plugin_glide_browser-1__browser_snapshot` to see current state
+For any building task, follow the orchestrator's phases:
 
-3. **If already logged in**: (shows "New app" button, dashboard visible)
-   - Skip to profile sync
+1. **Clarify** - Understand requirements
+2. **Setup** - Create blank app (delegate to screen-builder)
+3. **Data** - Create tables (delegate to data-agent)
+4. **Screens** - Build UI (delegate to screen-builder, component-builder)
+5. **Polish** - Actions, settings
+6. **Review** - Design review
+7. **QA** - Verify features work
 
-4. **If not logged in**: Guide the user:
-   > "Please log in to Glide in the browser window. Click 'Sign In' and complete the authentication. I'll detect when you're done."
+## Key Files to Reference
 
-5. **Wait for completion**: Poll `mcp__plugin_glide_browser-1__browser_snapshot` every 3 seconds
-   - Success: Page shows "New app" button, app list, or team selector (no login form visible)
-   - Timeout: After 2 minutes, check if they need help
+| Purpose | File Path |
+|---------|-----------|
+| Main orchestrator | `glide/orchestrator/ORCHESTRATOR.md` |
+| Data operations | `glide/agents/data/AGENT.md` |
+| Screen building | `glide/agents/screen-builder/AGENT.md` |
+| Component config | `glide/agents/component-builder/AGENT.md` |
+| Browser executor | `glide/browser/EXECUTOR.md` |
 
-6. **Sync authenticated profile to all browsers**:
-   ```bash
-   mkdir -p .glide
-   for i in 2 3 4 5 6; do
-     rm -rf ".glide/browser-profile-$i"
-     cp -R ".glide/browser-profile-1" ".glide/browser-profile-$i"
-   done
-   ```
+## Sub-Agent Procedures
 
-7. **Inform user**:
-   > "✓ Logged in! All 6 browsers are authenticated and ready for parallel work."
+Each agent has step-by-step procedures:
 
-**Store authentication:**
-- Create/update `.glide/config.json` to store authenticated status
+```
+glide/agents/data/procedures/
+  - add-column.md
+  - add-relation.md
+  - add-computed.md
+  - get-api-key.md
 
-### Step 3: Choose app (new or existing)
+glide/agents/screen-builder/procedures/
+  - create-app.md
+  - create-tab.md
+  - set-app-settings.md
 
-Use AskUserQuestion:
-- Question: "Do you want to create a new Glide app or work with an existing one?"
-- Options:
-  - "Create new app" - Start fresh with a blank Glide app
-  - "Edit existing app" - Continue working on an app you've already created
+glide/agents/component-builder/procedures/
+  - configure-collection.md
+  - add-component.md
+  - add-action.md
+```
 
-### Step 4: If editing existing, get app details
+## Browser Tools
 
-If the user selected "Edit existing app":
+Use the browser MCP tools for automation:
+- `mcp_cursor-browser-extension_browser_navigate` - Go to URL
+- `mcp_cursor-browser-extension_browser_snapshot` - Get page state
+- `mcp_cursor-browser-extension_browser_click` - Click elements
+- `mcp_cursor-browser-extension_browser_type` - Type text
 
-Use AskUserQuestion:
-- Question: "Please provide the app URL or app name"
-- This will allow "Other" input where they can paste the URL or type the app name
+## Tracking App Context
 
-The URL format is typically: `go.glideapps.com/app/{appId}/layout`
+Keep track of these values during a build session:
+- **App ID**: Extract from URL (`go.glideapps.com/app/{APP_ID}/layout`)
+- **API Key**: Copy from Data Editor → Show API → Copy secret token
 
-Extract the `appId` from the URL if provided, or search by app name.
-
-**Store the app context:**
-- Update `.glide/config.json` to include `appUrl` and `appId`
-
-### Step 5: Ask what they want to do
-
-Use AskUserQuestion:
-- Question: "What would you like to do with this Glide app?"
-- Options:
-  - "Build screens and UI" - Use the builder agent
-  - "Analyze a file for import" - Import data from a file
-  - "Review and improve design" - Use design-review agent
-  - "Test and verify features" - Use QA agent
-  - "Research existing app" - Explore the app structure
-
-Based on their selection:
-- **Build screens**: Launch the `build` agent
-- **Analyze file**: Ask for file path, then launch `file-analysis` agent
-- **Review design**: Launch the `design-review` agent
-- **Test features**: Launch the `qa` agent
-- **Research app**: Launch the `app-research` agent
-
-## Implementation Notes
-
-- Step 0 requires reading the main `glide` skill - this is mandatory before proceeding
-- Read `.glide/config.json` first to check existing auth and settings
-- Handle browser profile copying correctly to support multi-browser work
-- Pass app context (appUrl, appId) to all launched agents
-- API key is requested by the `data` agent when actually creating tables (not at setup time)
+Pass these to sub-agents when delegating tasks.

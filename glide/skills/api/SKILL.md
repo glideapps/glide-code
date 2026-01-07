@@ -71,6 +71,61 @@ curl -X GET "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Content-Type: application/json"
 ```
 
+### Example: Create Table
+
+Create a new Big Table with schema and initial data. See [official docs](https://apidocs.glideapps.com/api-reference/v2/tables/post-tables).
+
+```bash
+curl -X POST "https://api.glideapps.com/tables" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Contacts",
+    "appsToLink": ["APP_ID_HERE"],
+    "schema": {
+      "columns": [
+        {"id": "fullName", "displayName": "Full Name", "type": "string"},
+        {"id": "email", "displayName": "Email", "type": "string"},
+        {"id": "photo", "displayName": "Photo", "type": "uri"},
+        {"id": "createdAt", "displayName": "Created", "type": "dateTime"}
+      ]
+    },
+    "rows": [
+      {
+        "fullName": "Alex Bard",
+        "email": "alex@example.com",
+        "photo": "https://randomuser.me/api/portraits/men/32.jpg",
+        "createdAt": "2024-07-29T14:04:15.561Z"
+      }
+    ]
+  }'
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "tableID": "2a1bad8b-cf7c-44437-b8c1-e3782df6",
+    "rowIDs": ["zcJWnyI8Tbam21V34K8MNA"],
+    "linkedAppIDs": ["APP_ID_HERE"]
+  }
+}
+```
+
+**Column Types for Schema:**
+| Type | Description |
+|------|-------------|
+| `string` | Text data |
+| `number` | Numeric values |
+| `dateTime` | ISO 8601 dates |
+| `uri` | URLs (images, links) |
+| `boolean` | True/false |
+
+**Key Points:**
+- `appsToLink`: Array of app IDs to automatically link the table to
+- `schema.columns`: Each has `id` (used in row data), `displayName` (shown in UI), `type`
+- `rows`: Use column `id` values as keys, NOT `displayName`
+
 ### Example: Add Rows
 
 **Use column IDs (not display names) as keys.** Column IDs are defined in the schema when creating the table.
@@ -81,8 +136,8 @@ curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Content-Type: application/json" \
   -d '{
     "rows": [
-      {"name": "Alice", "email": "alice@example.com"},
-      {"name": "Bob", "email": "bob@example.com"}
+      {"fullName": "Alice", "email": "alice@example.com"},
+      {"fullName": "Bob", "email": "bob@example.com"}
     ]
   }'
 ```

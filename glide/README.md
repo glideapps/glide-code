@@ -45,7 +45,8 @@ Your login will be remembered for future sessions.
 
 | Command | Description |
 |---------|-------------|
-| `/start` | Guided setup - choose new/existing app, store API key, select action |
+| `/glide` | Build apps - guided setup, choose new/existing app, store API key, begin building |
+| `/ask` | Expert advisor - ask about viability, features, get data/screen/workflow plans |
 | `/tip` | Provide expert guidance when stuck - plugin learns and updates its skills |
 
 ## Skills
