@@ -98,6 +98,8 @@ glide/browser/selectors/
 | Command | Description |
 |---------|-------------|
 | `/glide` or `/start` | Guided setup |
+| `/ask` | Expert advisor - answer questions, assess viability, plan apps |
+| `/email-success` | Draft email responses to customer Glide questions |
 | `/tip` | Provide expert guidance - plugin learns |
 
 ## Key Rules
