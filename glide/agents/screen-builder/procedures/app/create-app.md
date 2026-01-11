@@ -15,241 +15,197 @@ Creates a new blank Glide app. Always use Blank template - never import files.
 
 ### Step 1: Navigate to Dashboard
 
-```
-COMMAND: NAVIGATE
-URL: https://go.glideapps.com
+```typescript
+mcp__playwright__browser_navigate({
+  url: "https://go.glideapps.com"
+})
 
-EXPECTED: Glide dashboard loads
-VERIFY: Shows app gallery, "New app" button visible
+// Expected Result:
+// - Glide dashboard loads
+// - App gallery visible
+// - "New app" button present
 ```
 
 ### Step 2: Check Authentication
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Verify logged in
+```typescript
+const snapshot = mcp__playwright__browser_snapshot()
 
-CHECK: 
-  - If "Sign In" button visible → User needs to log in manually
-  - If "New app" button visible → Proceed to Step 3
+// Check authentication status:
+// - If "Sign In" button exists → User needs to log in manually
+// - If "New app" button exists → Authenticated, proceed to Step 3
+
+if (snapshot contains "Sign In") {
+  // Not authenticated
+  return {
+    status: "BLOCKED",
+    reason: "User must log in to Glide",
+    action: "Please sign in to Glide in the browser, then I'll continue"
+  }
+}
 ```
 
-If not logged in:
-```
-REPORT: BLOCKED
-REASON: User must log in to Glide
-ACTION: Prompt user to sign in, then retry
-```
+**If not logged in:** Wait for user to authenticate manually, then retry from Step 1.
 
 ### Step 3: Click New App
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Find New App button
+```typescript
+// Take snapshot to find the button
+const snapshot = mcp__playwright__browser_snapshot()
+// Extract ref for "New app" button (usually prominent on dashboard)
+const newAppButtonRef = find(snapshot, "New app")
 
-FIND: "New app" button or card
-      Usually prominent on dashboard
-      May show as "+ New app" or just "New app"
-```
+mcp__playwright__browser_click({
+  ref: newAppButtonRef,
+  element: "New app button"
+})
 
-```
-COMMAND: CLICK
-REF: {ref of New app button}
-ELEMENT: "New app" button
+// Verification: Take another snapshot to confirm modal opened
+const verification = mcp__playwright__browser_snapshot()
+// Assert: Template selection modal is visible with "Blank" option
 
-EXPECTED: App template selection modal appears
+if (!verification.contains("Blank")) {
+  // Retry logic: Modal didn't appear
+  wait(1000)
+  retry click (max 2 retries)
+}
 ```
 
 ### Step 4: Select Blank Template
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Find template options
+```typescript
+const templateSnapshot = mcp__playwright__browser_snapshot()
+const blankRef = find(templateSnapshot, "Blank")
 
-FIND: Template selection UI showing options like:
-      - "Blank" (what we want)
-      - "Import a file" (NEVER use this)
-      - Various templates
+mcp__playwright__browser_click({
+  ref: blankRef,
+  element: "Blank template option"
+})
+
+// Verification: Blank option should be selected/highlighted
 ```
 
-```
-COMMAND: CLICK
-REF: {ref of Blank option}
-ELEMENT: "Blank" template option
-
-EXPECTED: Blank option is selected/highlighted
-```
+**IMPORTANT:** Never select "Import a file" - always use Blank.
 
 ### Step 5: Create the App
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Find Create button
+```typescript
+const createSnapshot = mcp__playwright__browser_snapshot()
+const createButtonRef = find(createSnapshot, "Create app")
 
-FIND: "Create app" or "Create" button
-      Usually at bottom of modal
-```
+mcp__playwright__browser_click({
+  ref: createButtonRef,
+  element: "Create app button"
+})
 
-```
-COMMAND: CLICK
-REF: {ref of Create button}
-ELEMENT: "Create app" button
-
-EXPECTED: Modal closes, new app loads in editor
-WAIT: May take 2-5 seconds for app to initialize
+// Expected: Modal closes, app creation begins
+// Note: May take 2-5 seconds for app to initialize
 ```
 
 ### Step 6: Wait for Editor to Load
 
-```
-COMMAND: WAIT_FOR_TEXT
-TEXT: Layout
+```typescript
+mcp__playwright__browser_wait_for({
+  text: "Layout",
+  // Timeout after 10 seconds
+})
 
-EXPECTED: Layout tab appears, indicating editor is ready
-
-ALTERNATIVE TEXT: "Data" or "Settings" - any main nav tab
-```
-
-```
-COMMAND: SNAPSHOT
-PURPOSE: Confirm app loaded
-
-VERIFY:
-  - Main editor UI visible
-  - Navigation tabs (Data, Layout, Settings) present
-  - Preview area shows empty app
+// Verify editor loaded properly
+const editorSnapshot = mcp__playwright__browser_snapshot()
+// Assert: Main editor UI visible
+// Assert: Navigation tabs (Data, Layout, Settings) present
+// Assert: Preview area shows empty app
 ```
 
 ### Step 7: Extract App ID
 
-```
-COMMAND: EVALUATE
-CODE: () => window.location.href
+```typescript
+const currentUrl = mcp__playwright__browser_evaluate({
+  function: "() => window.location.href"
+})
 
-EXPECTED: URL like "https://go.glideapps.com/app/{APP_ID}/layout"
-```
+// Parse APP_ID from URL format:
+// "https://go.glideapps.com/app/{APP_ID}/layout"
+const appId = extractFromUrl(currentUrl, /app\/([^\/]+)/)
 
-Parse the APP_ID from the URL for future operations.
+// Store appId for all future operations
+```
 
 ### Step 8: Set App Name
 
-Set the app name (skip the emoji icon - it causes UI issues):
+```typescript
+// Navigate to Settings tab
+const settingsSnapshot = mcp__playwright__browser_snapshot()
+const settingsTabRef = find(settingsSnapshot, "Settings")
 
-```
-COMMAND: CLICK
-REF: {ref of Settings tab}
-ELEMENT: "Settings" tab in main navigation
+mcp__playwright__browser_click({
+  ref: settingsTabRef,
+  element: "Settings tab"
+})
 
-EXPECTED: Settings page loads
-```
+// Wait for settings to load
+wait(500)
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Find name input
+// Find and click name input
+const nameSnapshot = mcp__playwright__browser_snapshot()
+const nameInputRef = find(nameSnapshot, "Name")
 
-FIND: "Name" or "Title" input field in Settings
-      Usually in "Name & Icon" section at top
-```
+mcp__playwright__browser_click({
+  ref: nameInputRef,
+  element: "App name input"
+})
 
-```
-COMMAND: CLICK
-REF: {ref of name input}
-ELEMENT: App name input
-```
+// Select all existing text
+mcp__playwright__browser_press_key({ key: "Meta+A" })
 
-```
-COMMAND: PRESS_KEY
-KEY: Meta+A
-PURPOSE: Select all existing text
-```
+// Type new app name
+mcp__playwright__browser_type({
+  ref: nameInputRef,
+  element: "App name input",
+  text: appName
+})
 
-```
-COMMAND: TYPE
-REF: {ref of name input}
-ELEMENT: App name input
-TEXT: {appName}
-
-RULES:
-  - 2 words maximum
-  - No company name
-  - No punctuation
-  - Good: "Tasks", "Inventory", "CRM", "Team"
-  - Bad: "Acme Task Manager!", "My Company's Inventory System"
+// App name saves automatically
 ```
 
-App name saves automatically - no save button needed.
+**App Naming Rules:**
+- 2 words maximum
+- No company name
+- No punctuation
+- ✅ Good: "Tasks", "Inventory", "CRM"
+- ❌ Bad: "Acme Task Manager!", "My Company's Inventory System"
 
-**⚠️ SKIP THE EMOJI PICKER** - Don't try to change the app icon. The emoji picker causes the page state to exceed token limits. Leave the default icon.
+**⚠️ SKIP THE EMOJI PICKER** - Don't change the app icon. The emoji picker causes token overflow. Leave the default icon.
 
 ## Verification
 
-```
-COMMAND: SNAPSHOT
-PURPOSE: Final verification
+```typescript
+const finalSnapshot = mcp__playwright__browser_snapshot()
 
-VERIFY:
-  - App exists and is editable
-  - Can navigate between Data, Layout, Settings tabs
-  - App name shows correctly (if set)
-```
+// Verify all requirements met:
+assert(finalSnapshot.contains("Data"))
+assert(finalSnapshot.contains("Layout"))
+assert(finalSnapshot.contains("Settings"))
+assert(appNameIsSet === true)
+assert(appId !== null)
 
-## Error Recovery
-
-### "New app" Button Not Found
-
-```
-ISSUE: Dashboard doesn't show new app option
-
-CHECK:
-  1. Are you on the correct URL? (go.glideapps.com)
-  2. Is the page fully loaded?
-  3. Are you logged in to the correct team?
-
-TRY: Refresh page, or navigate directly to go.glideapps.com
+// Success criteria:
+// ✅ App exists and is editable
+// ✅ Can navigate between Data, Layout, Settings tabs
+// ✅ App name shows correctly
+// ✅ App ID extracted from URL
 ```
 
-### Template Modal Doesn't Appear
+## Error Recovery Matrix
 
-```
-ISSUE: Clicking New app doesn't open modal
-
-CHECK:
-  1. Is there a popup blocker?
-  2. Is another modal already open?
-
-TRY:
-  COMMAND: PRESS_KEY
-  KEY: Escape
-  
-  Then retry clicking New app
-```
-
-### App Creation Fails
-
-```
-ISSUE: Create button doesn't work or errors
-
-CHECK:
-  1. Is there an error message displayed?
-  2. Is the account over app limit?
-  3. Network connectivity issues?
-
-TRY: Refresh and retry, or check Glide status
-```
-
-### Editor Doesn't Load After Creation
-
-```
-ISSUE: Stuck on loading state
-
-WAIT: Up to 10 seconds (new apps can be slow)
-
-IF still stuck:
-  COMMAND: NAVIGATE
-  URL: https://go.glideapps.com
-  
-  Find the new app in dashboard and click to open
-```
+| Error | Detection | Recovery Strategy | Max Retries |
+|-------|-----------|------------------|-------------|
+| **"New app" button not found** | Snapshot doesn't contain "New app" | 1. Check URL is go.glideapps.com<br>2. Wait 2s for page load<br>3. Refresh page<br>4. Navigate to go.glideapps.com again | 3 |
+| **Template modal doesn't appear** | After click, snapshot doesn't contain "Blank" | 1. Press Escape key<br>2. Wait 500ms<br>3. Retry click on "New app" | 2 |
+| **Create button doesn't work** | Modal still open after click | 1. Check for error message in snapshot<br>2. Verify "Blank" is selected<br>3. Wait 1s and retry click | 2 |
+| **Editor doesn't load** | No "Layout" text after 10s | 1. Wait additional 5s<br>2. Navigate to go.glideapps.com<br>3. Find new app in dashboard and click | 1 |
+| **App ID extraction fails** | URL doesn't match pattern | 1. Check current URL format<br>2. Navigate to /layout route<br>3. Retry extraction | 2 |
+| **Name input not found** | Settings page doesn't show name field | 1. Wait 1s for settings to load<br>2. Refresh snapshot<br>3. Try alternate selector for "Title" | 2 |
 
 ## Important Notes
 
@@ -260,11 +216,27 @@ IF still stuck:
 
 ## Report Format
 
+Return structured output:
+
+```json
+{
+  "status": "SUCCESS",
+  "appName": "Inventory",
+  "appId": "abc123xyz",
+  "appUrl": "https://go.glideapps.com/app/abc123xyz/layout",
+  "defaultTables": ["Users"],
+  "timestamp": "2024-01-11T10:30:00Z",
+  "notes": "App created successfully with default name set"
+}
 ```
-APP CREATED:
-  Name: {appName}
-  App ID: {appId}
-  URL: https://go.glideapps.com/app/{appId}/layout
-  Status: SUCCESS | FAILED
-  Default Tables: Users
+
+**On failure:**
+```json
+{
+  "status": "FAILED",
+  "error": "Template modal didn't appear after 2 retries",
+  "step": "Step 3: Click New App",
+  "recoveryAttempted": ["Pressed Escape", "Retried click"],
+  "suggestion": "Check if popup blocker is enabled"
+}
 ```

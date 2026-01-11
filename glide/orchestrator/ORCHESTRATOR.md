@@ -188,89 +188,126 @@ Steps:
 
 ## Delegation Format
 
-When delegating to a sub-agent, be specific and provide context:
+When delegating to a sub-agent, use the **Task tool** to spawn specialized agents:
 
+```typescript
+Task(
+  subagent_type: "{agent-type}",
+  prompt: "{detailed task description with context}",
+  description: "{short 3-5 word summary}"
+)
 ```
-DELEGATE TO: {agent-name}
-TASK: {specific task description}
-CONTEXT:
-  - App ID: {appId}
-  - Current state: {what's already built}
-  - Dependencies: {what this task depends on}
-EXPECTED OUTPUT: {what you expect back}
-```
+
+**Available subagent types:**
+- `Bash` - For git operations, API calls, command execution
+- `general-purpose` - For complex multi-step research and analysis
+- `Explore` - For codebase exploration and keyword searches
+
+**Context to include in prompt:**
+- App ID (if working with existing app)
+- API Key (for data operations)
+- Current state (what's already built)
+- Dependencies (what this task requires)
+- Expected output (what you need back)
 
 ### Example Delegations
 
-**Creating a table:**
+**Creating a table via API:**
+```typescript
+Task(
+  subagent_type: "Bash",
+  description: "Create Tasks table via API",
+  prompt: `Create the Tasks table using the Glide API.
+
+Context:
+- App ID: abc123
+- API Key: glide_abc123xyz...
+- This is the first table being created
+- Use the API endpoint: POST https://api.glideapps.com/tables
+
+Table Specification:
+Name: Tasks
+Columns:
+  - name (Text) - Task title
+  - description (Text) - Task details
+  - status (Text) - Current status
+  - dueDate (Date/Time) - When it's due
+  - assignee (Text) - Who's assigned
+  - image (Image/URI) - Task image
+
+Requirements:
+- Include 5 sample rows with unique image URLs
+- Use picsum.photos for placeholder images
+- Return the table ID from the API response
+
+Expected Output: Table ID and confirmation of columns created`
+)
 ```
-DELEGATE TO: data-agent
-TASK: Create the Tasks table
-CONTEXT:
-  - App ID: abc123
-  - API Key: {the token retrieved from Show API}
-  - This is the first table being created
-EXPECTED OUTPUT: Table ID and confirmation of columns created
 
-TABLE SPEC:
-  Name: Tasks
-  Columns:
-    - name (Text) - Task title
-    - description (Text) - Task details
-    - status (Text) - Current status
-    - dueDate (Date) - When it's due
-    - assignee (Text) - Who's assigned
-    - image (Image) - Task image
-```
+**Creating a screen with collection (via browser automation):**
+```typescript
+Task(
+  subagent_type: "general-purpose",
+  description: "Create Tasks tab with collection",
+  prompt: `Create a new tab for the Tasks table in the Glide app.
 
-**Creating a screen with collection:**
-```
-DELEGATE TO: screen-builder
-TASK: Create the Tasks tab with Card collection
-CONTEXT:
-  - App ID: abc123
-  - Tasks table exists with ID: xyz789
-  - This will be the main tab
-EXPECTED OUTPUT: Confirmation that tab was created and styled
+Context:
+- App ID: abc123
+- App URL: https://go.glideapps.com/app/abc123/layout
+- Tasks table exists and is linked to the app
+- This will be the main navigation tab
 
-SCREEN SPEC:
-  Tab Label: Tasks
-  Source Table: Tasks
-  Collection Style: Card
-  Card Fields:
-    - Title: name column
-    - Subtitle: status column
-    - Image: image column
+Requirements:
+1. Navigate to the app's Layout Editor
+2. Create a new tab from the Tasks table
+3. Set tab label to "Tasks"
+4. Configure the collection as Card style
+5. Set card fields:
+   - Title: name column
+   - Subtitle: status column
+   - Image: image column
 
-PROCEDURES TO USE:
-  1. navigation/create-tab.md
-  2. components/configure-collection.md
+Use browser automation tools (mcp__playwright__browser_*) to:
+- Navigate to the layout editor
+- Add a new screen from data
+- Select the Tasks table
+- Configure the collection component
+
+Expected Output: Confirmation that tab was created with Card collection configured`
+)
 ```
 
 **Configuring detail screen and actions:**
-```
-DELEGATE TO: screen-builder
-TASK: Configure the Tasks detail screen with edit/delete actions
-CONTEXT:
-  - App ID: abc123
-  - Tasks tab exists
-  - Currently showing default components
-EXPECTED OUTPUT: Confirmation of component and action configuration
+```typescript
+Task(
+  subagent_type: "general-purpose",
+  description: "Configure Tasks detail screen",
+  prompt: `Configure the Tasks detail screen with custom components and actions.
 
-COMPONENT SPEC:
-  Screen: Tasks Detail
-  Components:
-    1. Title: Cover style with image column
-    2. Headline: Status with emoji prefix
-    3. Fields: description, dueDate, assignee
-  Actions:
-    - Edit button (opens edit form)
-    - Delete button (with confirmation)
-    - Mark Complete (sets status to "Complete")
+Context:
+- App ID: abc123
+- App URL: https://go.glideapps.com/app/abc123/layout
+- Tasks tab already exists with Card collection
+- Currently showing default detail screen components
 
-PROCEDURES TO USE:
-  1. components/add-component.md
-  2. components/add-action.md
+Requirements:
+1. Navigate to the Tasks detail screen (click on any item in the collection)
+2. Configure components:
+   - Title component: Cover style, bound to image column
+   - Headline component: Bound to status column
+   - Field components: description, dueDate, assignee
+3. Add action buttons:
+   - Edit button: Opens edit form
+   - Delete button: Delete row with confirmation dialog
+   - Mark Complete button: Set status column to "Complete"
+
+Use browser automation tools (mcp__playwright__browser_*) to:
+- Navigate to the detail screen
+- Add/configure components
+- Add button components with actions
+
+Expected Output: Confirmation of all components and actions configured`
+)
 ```
 
 ## Handling Sub-Agent Reports
@@ -331,18 +368,35 @@ You must run sequentially when:
 - Component configuration needs the screen to exist first
 
 ### Parallel Example
-```
-PARALLEL DELEGATION:
-  Browser 1 → data-agent: "Create Tasks table"
-  Browser 2 → data-agent: "Create Projects table"
-  Browser 3 → data-agent: "Create Users table"
 
-WAIT FOR ALL TO COMPLETE
+**Creating multiple tables in parallel:**
+```typescript
+// Execute all three Task calls in a SINGLE message
+Task(
+  subagent_type: "Bash",
+  description: "Create Tasks table",
+  prompt: "Create Tasks table via Glide API with columns: name, description, status, dueDate..."
+)
+Task(
+  subagent_type: "Bash",
+  description: "Create Projects table",
+  prompt: "Create Projects table via Glide API with columns: name, description, budget..."
+)
+Task(
+  subagent_type: "Bash",
+  description: "Create Users table",
+  prompt: "Create Users table via Glide API with columns: fullName, email, photo..."
+)
 
-THEN:
-  Browser 1 → data-agent: "Create Task→Project relation"
-  Browser 2 → data-agent: "Create Task→User relation"
+// Wait for all to complete, then create relations sequentially
+Task(
+  subagent_type: "general-purpose",
+  description: "Create Task→Project relation",
+  prompt: "Add relation column in Tasks table linking to Projects table..."
+)
 ```
+
+**IMPORTANT:** To run tasks in parallel, you MUST send all Task tool calls in a single message. Do not wait between them.
 
 ## App Naming Rules
 

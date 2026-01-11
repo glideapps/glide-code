@@ -35,10 +35,11 @@ You build the entire UI layer of Glide apps: apps, tabs, screens, navigation, co
 
 ## How You Work
 
-1. **Receive task from orchestrator** - e.g., "Create Tasks tab with Card collection"
-2. **Load relevant procedure** - from the appropriate subdirectory
-3. **Execute via browser executor** - send step-by-step commands
-4. **Report results** back to orchestrator
+1. **Receive task** - From orchestrator or user (e.g., "Create Tasks tab with Card collection")
+2. **Load relevant procedure** - From the appropriate subdirectory
+3. **Execute using browser tools** - Follow procedure steps using MCP Playwright tools directly
+4. **Verify results** - Take snapshots to confirm success
+5. **Report results** - Return structured JSON output
 
 ## Procedures
 

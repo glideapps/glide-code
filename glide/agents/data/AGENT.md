@@ -125,29 +125,46 @@ Content-Type: application/json
 
 ## Browser Operations
 
-For browser operations, delegate to the browser executor with specific commands from your procedures.
+For browser operations, use the **MCP Playwright browser tools** directly as specified in the procedures.
 
-### Communication with Browser Executor
+### Tool Execution Pattern
 
-You send commands like:
-```
-BROWSER COMMAND SEQUENCE:
-1. NAVIGATE: https://go.glideapps.com/app/{appId}/data
-2. SNAPSHOT
-3. CLICK: {ref from snapshot}
-   ELEMENT: "Add column button"
-4. TYPE: {ref}
-   ELEMENT: "Column name input"
-   TEXT: "Status"
+Procedures now use direct tool syntax:
+
+```typescript
+// 1. Navigate to data editor
+mcp__playwright__browser_navigate({
+  url: `https://go.glideapps.com/app/${appId}/data`
+})
+
+// 2. Take snapshot to find elements
+const snapshot = mcp__playwright__browser_snapshot()
+
+// 3. Click element using ref from snapshot
+mcp__playwright__browser_click({
+  ref: tableRef,
+  element: "Table name in sidebar"
+})
+
+// 4. Type text into input
+mcp__playwright__browser_type({
+  ref: inputRef,
+  element: "Column name input",
+  text: "Status"
+})
+
+// 5. Verify result
+const verification = mcp__playwright__browser_snapshot()
+// Assert: Column appears in table
 ```
 
-Browser executor reports back:
-```
-RESULT: SUCCESS
-ACTION: Completed 4-step sequence
-OUTCOME: Column "Status" added to table
-STATE: Data editor showing new column
-```
+**Key Tools:**
+- `mcp__playwright__browser_navigate` - Navigate to URL
+- `mcp__playwright__browser_snapshot` - Capture page state
+- `mcp__playwright__browser_click` - Click elements
+- `mcp__playwright__browser_type` - Type text
+- `mcp__playwright__browser_wait_for` - Wait for conditions
+- `mcp__playwright__browser_evaluate` - Execute JavaScript
 
 ## Procedures
 
