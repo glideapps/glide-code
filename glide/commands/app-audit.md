@@ -1,4 +1,5 @@
 ---
+name: app-audit
 description: Audit Glide app for performance issues - analyze data structure and layout for bottlenecks
 argument-hint: [glide-app-url]
 ---
