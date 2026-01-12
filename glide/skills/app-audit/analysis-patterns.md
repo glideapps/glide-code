@@ -64,9 +64,35 @@ Tasks table:
 ```
 
 **Detection Method**:
-1. Build column dependency graph
-2. Count depth from leaf nodes to basic columns
-3. Flag chains exceeding thresholds
+
+⚠️ **IMPORTANT**: The Glide API does NOT expose computed columns. You MUST inspect columns via the browser Data Editor.
+
+**Step 1: Identify computed columns in Data Editor**
+1. Navigate to the table in the Data Editor
+2. Look at column headers - computed columns show formula icons (fx, Σ, →, etc.)
+3. Click on each computed column to see its configuration panel
+
+**Step 2: Trace dependencies for each computed column**
+1. In the column's configuration panel, look at which columns it references
+2. If it references another computed column, note the dependency
+3. Click on that referenced computed column to see what IT references
+4. Continue until you reach basic columns (no more computed dependencies)
+5. Count the total layers
+
+**Step 3: Build column dependency graph**
+1. Create a mental or written map: Column A → Column B → Column C → Basic Column
+2. Count depth from each computed column to its root basic columns
+3. Flag chains exceeding thresholds (4+ = warning, 6+ = critical)
+
+**Example browser inspection flow**:
+```
+1. Click "Status Display" column → sees it references "Status Emoji" (Template)
+2. Click "Status Emoji" column → sees it references "Is Overdue" (If-Then-Else)
+3. Click "Is Overdue" column → sees it references "Days Until Due" (If-Then-Else)
+4. Click "Days Until Due" column → sees it references "Due Date" (Math)
+5. Click "Due Date" column → sees it's a basic Date column (END)
+Result: 4-layer chain detected
+```
 
 ---
 
@@ -115,9 +141,15 @@ Other data accessible via:
 ```
 
 **Detection Method**:
-1. Count relation-type columns per table
-2. Flag tables exceeding thresholds
-3. List all relations for review
+
+⚠️ **Browser inspection required** - Relations are NOT exposed in the API.
+
+1. Navigate to table in Data Editor
+2. Look for columns with the **link icon** (🔗) in the column header
+3. Click on each relation column to see its target table
+4. Count total relation columns per table
+5. Flag tables with 5+ relations (warning) or 8+ relations (critical)
+6. List all relations for review
 
 ---
 
@@ -163,9 +195,27 @@ Result: Each project shows only its own task count
 ```
 
 **Detection Method**:
-1. Identify rollup columns
-2. Check if source is relation or table
-3. Flag rollups sourcing tables directly
+
+⚠️ **Browser inspection required** - Rollup configuration is NOT exposed in the API.
+
+1. Navigate to table in Data Editor
+2. Look for columns with the **Σ (sigma) icon** - these are rollups
+3. Click on each rollup column to open its configuration panel
+4. **CRITICAL CHECK**: Look at the "Source" or "Values from" field:
+   - ✅ If it shows a **relation column name** (e.g., "Related Tasks") → GOOD
+   - ❌ If it shows a **table name** directly (e.g., "Tasks") → CRITICAL ISSUE
+5. Flag any rollups that source from tables directly as **Critical** issues
+
+**How to identify in the UI**:
+```
+Good rollup config:
+  Source: → Related Tasks (relation)
+  Function: Count
+
+Bad rollup config:
+  Source: → Tasks (table)
+  Function: Count
+```
 
 ---
 
@@ -212,9 +262,25 @@ Combined approach:
 ```
 
 **Detection Method**:
-1. Identify AI column types
-2. Count per table
-3. Calculate total AI cost/latency
+
+⚠️ **Browser inspection required** - AI columns are NOT exposed in the API.
+
+1. Navigate to table in Data Editor
+2. Look for columns with the **sparkle/AI icon** (✨) in the column header
+3. Click on each AI column to see its type:
+   - Generate Text
+   - Image to Text
+   - Audio to Text
+   - Document to Text
+   - Text to Choice
+   - Text to Boolean
+   - Text to JSON
+   - Text to Number
+   - Text to Date
+   - Text to Texts
+4. Count AI columns per table
+5. Flag tables with 3+ AI columns (warning) or 5+ (critical)
+6. Calculate estimated latency: each AI column adds ~2-3 seconds per row
 
 ---
 
@@ -256,9 +322,15 @@ Result: 1 relation lookup, 3 instant value retrievals
 ```
 
 **Detection Method**:
-1. Count Query-type columns per table
-2. Flag tables with 2+
-3. Suggest relation alternatives
+
+⚠️ **Browser inspection required** - Query columns are NOT exposed in the API.
+
+1. Navigate to table in Data Editor
+2. Look for columns marked as "Query" or "Lookup query" type
+3. Click to inspect their configuration
+4. Count Query columns per table
+5. Flag tables with 2+ Query columns (warning)
+6. Suggest converting to: Relation + Lookups pattern
 
 ---
 
@@ -600,7 +672,9 @@ Algorithm:
 - 10+ fields in card collections
 - Showing computed columns in tables
 - Missing Row ID columns
-- Inconsistent naming patterns
+- Inconsistent display name patterns (e.g., mixing "First Name" and "last_name")
+
+**NOTE:** Internal Glide column IDs (like `"r4bk7"`, `"bjkhJ"`) shown in the API are NOT naming issues - they are normal system identifiers not visible to users.
 
 ---
 

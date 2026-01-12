@@ -1,3 +1,6 @@
 .playwright-mcp
 .DS_Store
 .glide/
+
+# Audit reports contain sensitive client data
+audit-reports/

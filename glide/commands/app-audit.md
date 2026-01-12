@@ -38,7 +38,9 @@ Follow the procedures in `glide/skills/app-audit/`:
    - Parse app URL to extract App ID
    - Navigate to app Data Editor
    - Extract API token via browser automation
-   - Fetch tables and schemas via API (GET requests only)
+   - Fetch tables and row counts via API (GET requests only)
+   - **CRITICAL: Inspect computed columns via browser** (API doesn't expose them)
+   - **Trace computed column dependencies** to detect multi-layer chains
 
 2. **Analyze Data Structure** (`procedures/analyze-data-structure.md`)
    - Build column dependency graphs
@@ -62,6 +64,28 @@ Follow the procedures in `glide/skills/app-audit/`:
      - Optimizations (🟢)
      - Performance score breakdown
      - Priority actions
+
+## Data Inspection Methodology
+
+⚠️ **You MUST use BOTH API and Browser inspection:**
+
+| Method | Purpose | What It Reveals |
+|--------|---------|-----------------|
+| **API (Show API panel)** | Get table list, row counts, basic column types | Text, Number, Date, Boolean columns only |
+| **Browser (Data Editor)** | Inspect computed columns, trace dependencies | Math, If-Then-Else, Relations, Rollups, Lookups, AI columns, Templates |
+
+**The Glide API does NOT expose computed columns.** An API-only audit will miss:
+- Computed column chains (the #1 performance issue)
+- Relation proliferation
+- Rollup misconfigurations (rollup on table vs relation)
+- AI column overuse
+
+**For each major table, you must:**
+1. Click on the table in the Data Editor
+2. Look at column headers to identify computed columns (formula icons)
+3. Click computed columns to see their configuration panel
+4. Trace dependencies: if a computed column references another computed column, follow the chain
+5. Count the depth of the deepest chain (4+ layers = warning, 6+ = critical)
 
 ## Important Safety Notes
 
