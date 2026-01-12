@@ -53,7 +53,7 @@ The main panel shows key metrics at a glance:
 | **Total Columns** | All columns across all tables | App complexity |
 | **Visible/Hidden Columns** | Column visibility breakdown | Data organization |
 | **Computed** | Number of computed columns | Performance indicator |
-| **Max Depth** | Deepest dependency chain | ⚠️ **Critical metric!** Flag if 6+ |
+| **Max Depth** | Deepest dependency chain | Useful context for understanding complexity |
 | **Dependency Links** | Total relationships between columns | Complexity indicator |
 | **Tables by Type** | Glide Tables, Big Tables, Google Sheets, etc. | Data source breakdown |
 
@@ -76,10 +76,11 @@ Click **"Column Dependencies"** button to see the full dependency analysis.
 - **Actions:** Expand all, Quick summary, Compact/Expanded view
 
 **Audit workflow:**
-1. Check **Max Depth** in overview - flag if 6+ (critical) or 4+ (warning)
-2. Use **Min Depth filter** to find deep chains quickly
-3. Expand tables to see which specific columns have high depth
-4. Document the deepest chains for the report
+1. Check **Max Depth** in overview - note for context (no official threshold from Glide)
+2. Use **Min Depth filter** to find deeper chains
+3. Expand tables to see which specific columns have dependencies
+4. Run **Performance Analysis** to see which columns actually exceed 100ms
+5. Document chains for columns that show ⚠️ in Performance Analysis
 
 ### 🔒 Access Control
 
@@ -111,8 +112,8 @@ Shows:
 - Search and sort options
 
 **Audit workflow:**
-1. Check row counts against plan limits (80%+ = warning, 95%+ = critical)
-2. Identify large tables that may need optimization
+1. Check row counts against Glide Table limit (25,000 rows)
+2. Identify tables approaching the limit that need Big Tables migration
 3. Export to CSV for documentation
 
 ---
@@ -546,23 +547,23 @@ flowchart BT
 ```
 
 **Diagram generation rules:**
-1. **Group by table** using `subgraph TableName["Table Name (Max Depth: X)"]`
+1. **Group by table** using `subgraph TableName["Table Name"]`
 2. **Direction**: Use `flowchart BT` (bottom to top) so basic columns are at bottom
-3. **Node labels**: Include column name, type, and depth for computed columns
+3. **Node labels**: Include column name and type
 4. **Arrows**: Basic → Computed (dependency direction)
 5. **Color coding**:
    - Green (`#90EE90`) for basic columns
-   - Yellow (`#FFD700`) for warning depth (4-5)
-   - Red (`#FF6B6B`) for critical depth (6+)
+   - Default color for computed columns
+   - Highlight columns that show ⚠️ in Performance Analysis (>100ms)
 
-**Example from real audit:**
+**Example:**
 ```mermaid
 flowchart BT
-    subgraph Users["Users Table (Max Depth: 7)"]
+    subgraph Users["Users Table"]
         Email["Email<br/>(Basic)"]
-        ClaimsRel["Claims relation<br/>(Relation)<br/>depth: 5"]
-        ClaimsRD["Claims RD<br/>(Rollup)<br/>depth: 6"]
-        ClaimsSpec["Claims RD specific<br/>(Rollup)<br/>depth: 7"]
+        ClaimsRel["Claims relation<br/>(Relation)"]
+        ClaimsRD["Claims RD<br/>(Rollup)"]
+        ClaimsSpec["Claims RD specific<br/>(Rollup)"]
 
         Email --> ClaimsRel
         ClaimsRel --> ClaimsRD
@@ -570,14 +571,12 @@ flowchart BT
     end
 
     style Email fill:#90EE90
-    style ClaimsRD fill:#FF6B6B
-    style ClaimsSpec fill:#FF6B6B
 ```
 
 **Focus on problematic chains**: You don't need to diagram every column. Focus on:
-- Tables with Max Depth 4+
-- The specific chains that are deepest
-- Tables with most dependencies
+- Columns that show ⚠️ in Performance Analysis (>100ms)
+- Query columns that could be Relations
+- Tables approaching 25,000 row limit
 
 ---
 
