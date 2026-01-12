@@ -37,10 +37,10 @@ Follow the procedures in `glide/skills/app-audit/`:
 1. **Fetch App Data** (`procedures/fetch-app-data.md`)
    - Parse app URL to extract App ID
    - Navigate to app Data Editor
-   - Extract API token via browser automation
+   - Extract API token via "Show API" panel
    - Fetch tables and row counts via API (GET requests only)
-   - **CRITICAL: Inspect computed columns via browser** (API doesn't expose them)
-   - **Trace computed column dependencies** to detect multi-layer chains
+   - **Inspect computed columns via browser** (API doesn't expose them)
+   - **Trace column dependencies** to build dependency graph
 
 2. **Analyze Data Structure** (`procedures/analyze-data-structure.md`)
    - Build column dependency graphs
@@ -67,7 +67,9 @@ Follow the procedures in `glide/skills/app-audit/`:
 
 ## Data Inspection Methodology
 
-⚠️ **You MUST use BOTH API and Browser inspection:**
+### Required: API + Browser Inspection
+
+You MUST use BOTH API and Browser inspection for a complete audit:
 
 | Method | Purpose | What It Reveals |
 |--------|---------|-----------------|
@@ -80,12 +82,40 @@ Follow the procedures in `glide/skills/app-audit/`:
 - Rollup misconfigurations (rollup on table vs relation)
 - AI column overuse
 
-**For each major table, you must:**
-1. Click on the table in the Data Editor
+**Manual inspection steps for computed columns:**
+1. Click on each table in the Data Editor
 2. Look at column headers to identify computed columns (formula icons)
 3. Click computed columns to see their configuration panel
 4. Trace dependencies: if a computed column references another computed column, follow the chain
 5. Count the depth of the deepest chain (4+ layers = warning, 6+ = critical)
+6. **Build a dependency graph** for the report (see below)
+
+### Optional: Dev Tools Plugin
+
+If you have access to the **Dev Tools plugin** (limited to select Glide internal users), it can provide instant column dependency analysis with depth calculations. Look for the "Dev tools" button in the top-right toolbar.
+
+### Dependency Diagram Requirement
+
+The audit report MUST include a **Mermaid diagram** showing column dependencies:
+
+```mermaid
+flowchart BT
+    subgraph Users["Users Table (Max Depth: 7)"]
+        A["Email<br/>(Basic)"] --> B["Claims relation<br/>(Relation)"]
+        B --> C["Claims rollup<br/>(Rollup)<br/>depth: 6"]
+        C --> D["Claims specific<br/>(Rollup)<br/>depth: 7"]
+    end
+
+    style A fill:#90EE90
+    style D fill:#FF6B6B
+```
+
+**Diagram requirements:**
+- Group columns by table using subgraphs
+- Show dependency direction (basic → computed)
+- Include column type in labels
+- Show depth for computed columns
+- Color-code: green for basic columns, red for critical depth (6+), yellow for warnings (4-5)
 
 ## Important Safety Notes
 

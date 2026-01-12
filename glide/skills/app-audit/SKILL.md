@@ -28,7 +28,16 @@ Comprehensive performance audit tool for Glide applications. Analyzes data archi
 ## What It Audits
 
 ### Data Layer Analysis
-- **Computed column dependencies** - Detects deep chains causing latency
+
+**Best analyzed via Dev Tools plugin** (available to Glide internal users):
+- **Column Dependencies** - Complete dependency graph with depth calculations
+- **Max Depth** - Instantly shows deepest chain across entire app
+- **Access Control** - Row Owner and Role columns
+- **User Specific Columns** - Per-user data storage
+- **Table Row Counts** - Accurate counts with CSV export
+
+**Performance patterns detected:**
+- **Computed column dependencies** - Detects deep chains causing latency (4+ warning, 6+ critical)
 - **Relation structures** - Identifies proliferation and misuse
 - **Rollup configurations** - Flags rollups without relations
 - **AI column usage** - Tracks expensive AI inference
@@ -75,21 +84,27 @@ Each issue includes:
 
 ### Phase 1: Connect to App
 1. Parse Glide app URL to extract App ID
-2. Navigate to app in browser (Data Editor)
-3. Use browser automation to extract API token
-4. Verify API access works
+2. Navigate to app in browser
+3. **Open Dev Tools plugin** (primary method) or extract API token (fallback)
 
 ### Phase 2: Data Structure Analysis
-1. Fetch all tables via API (`GET /tables`)
-2. For each table, get schema with all columns
-3. Build column dependency graph
-4. Detect performance anti-patterns:
-   - Count computed column depth (flag 4+ layers)
+
+**Required: API + Browser Inspection**
+1. Fetch all tables via API (`GET /tables`) for row counts
+2. For each table, inspect computed columns in Data Editor (API doesn't expose them)
+3. Build column dependency graph by tracing references
+4. Generate Mermaid diagram of dependencies (see Phase 4)
+5. Detect performance anti-patterns:
+   - Count computed column depth (flag 4+ layers, critical at 6+)
    - Count relations per table (flag 5+)
    - Identify rollups on tables vs relations
    - Count AI columns (flag 3+)
    - Count Query columns (flag 2+)
    - Check row counts vs limits
+
+**Optional: Dev Tools Plugin** (limited to select Glide internal users)
+- If available, provides instant dependency analysis with depth calculations
+- Look for "Dev tools" button in top-right toolbar
 
 ### Phase 3: Layout Analysis
 1. Navigate to Layout Editor

@@ -17,13 +17,107 @@ Extract app data for audit analysis using browser automation and Glide API.
 This procedure handles the data extraction phase of the audit:
 1. Parse app URL to get App ID
 2. Navigate to app in browser
-3. Extract API token via browser automation
+3. Extract API token via "Show API" panel
 4. Fetch tables and row counts via API (GET requests only)
 5. **Inspect computed columns via browser** (API doesn't expose these)
-6. **Trace computed column dependencies** to detect chains
-7. Return structured data for analysis
+6. **Trace column dependencies** to detect chains
+7. **Build dependency data** for Mermaid diagram generation
+8. Return structured data for analysis
 
-## ⚠️ CRITICAL: API vs Browser Data Collection
+## Primary Method: API + Browser Inspection
+
+**You MUST use both API and browser inspection for a complete audit.**
+
+The Glide API does NOT expose computed columns. You need:
+- **API** for: table list, row counts, basic column info
+- **Browser inspection** for: computed column types, dependencies, relations, rollups
+
+---
+
+## Optional: Dev Tools Plugin
+
+**If available**, the Dev Tools plugin can speed up dependency analysis. It's only available to select Glide internal users.
+
+### How to Access Dev Tools
+
+1. Navigate to the app in Glide (any tab: Data, Layout, etc.)
+2. Look for the **"Dev tools"** button in the top-right toolbar (next to Share)
+3. Click to open the Dev Tools panel
+
+### Overview Panel (Default View)
+
+The main panel shows key metrics at a glance:
+
+| Metric | Description | Audit Use |
+|--------|-------------|-----------|
+| **Total Columns** | All columns across all tables | App complexity |
+| **Visible/Hidden Columns** | Column visibility breakdown | Data organization |
+| **Computed** | Number of computed columns | Performance indicator |
+| **Max Depth** | Deepest dependency chain | ⚠️ **Critical metric!** Flag if 6+ |
+| **Dependency Links** | Total relationships between columns | Complexity indicator |
+| **Tables by Type** | Glide Tables, Big Tables, Google Sheets, etc. | Data source breakdown |
+
+### 🔍 Column Dependencies (Most Important for Audits)
+
+Click **"Column Dependencies"** button to see the full dependency analysis.
+
+**Features:**
+- **Table-level summary**: Shows each table with dependency count and column breakdown
+  - Example: `Users – 31 dependencies | Total columns: 45 (15 Query • 1 Lookup • 16 Other computed • 13 Basic)`
+- **Per-column details** (expand table to see):
+  - Column name and internal ID
+  - Column type (Rollup, Relation, Query, Math, If-Then-Else, Lookup, etc.)
+  - "Uses X columns" - direct dependencies
+  - **"Total depth: X"** - full chain depth (the key audit metric!)
+- **Filters:**
+  - Search by column or table name
+  - Filter by type: Relation, If-Then-Else, Lookup, Single Value, Math, Rollup, Query
+  - **Min Depth filter** - show only columns with depth ≥ N
+- **Actions:** Expand all, Quick summary, Compact/Expanded view
+
+**Audit workflow:**
+1. Check **Max Depth** in overview - flag if 6+ (critical) or 4+ (warning)
+2. Use **Min Depth filter** to find deep chains quickly
+3. Expand tables to see which specific columns have high depth
+4. Document the deepest chains for the report
+
+### 🔒 Access Control
+
+Click **"Access Control"** to see Row Owner and Role columns.
+
+Shows:
+- Row Owner columns (control row-level access)
+- Role columns (define user permissions)
+- Table location for each
+- "Go to Column" navigation button
+
+### 👤 User Specific Columns
+
+Click **"User Specific Columns"** to see columns that store per-user data.
+
+Shows:
+- All user-specific columns across tables
+- Column type (Boolean, Text, etc.)
+- Useful for understanding favorites, user preferences, etc.
+
+### 📊 Table Row Counts
+
+Click **"Table Row Counts"** for comprehensive table data.
+
+Shows:
+- **Summary by type**: Glide Tables, Big Tables, Google Sheets, Excel, Airtable, SQL
+- **Per-table details**: Name, Type, Row count, Column count, Native Table ID
+- **Export to CSV** button for offline analysis
+- Search and sort options
+
+**Audit workflow:**
+1. Check row counts against plan limits (80%+ = warning, 95%+ = critical)
+2. Identify large tables that may need optimization
+3. Export to CSV for documentation
+
+---
+
+## API + Browser Data Collection (Required)
 
 **The Glide API does NOT expose computed columns.** You MUST use BOTH methods:
 
@@ -146,9 +240,9 @@ const appId = extractAppId(userInput);
 
 ---
 
-### Step 2: Navigate to Data Editor
+### Step 2: Navigate to App
 
-Use browser automation to open the app's Data Editor.
+Use browser automation to open the app.
 
 **Target URL**:
 ```
@@ -433,7 +527,61 @@ const columnGraph = {
 
 ---
 
-### Step 8: Compile and Return Data
+### Step 8: Generate Mermaid Diagram Data
+
+The audit report MUST include a Mermaid diagram showing column dependencies.
+
+**Generate Mermaid syntax** from the dependency graph:
+
+```mermaid
+flowchart BT
+    subgraph TableName["Table Name (Max Depth: X)"]
+        A["Column A<br/>(Basic)"] --> B["Column B<br/>(Math)<br/>depth: 1"]
+        B --> C["Column C<br/>(If-Then-Else)<br/>depth: 2"]
+        C --> D["Column D<br/>(Rollup)<br/>depth: 3"]
+    end
+
+    style A fill:#90EE90
+    style D fill:#FF6B6B
+```
+
+**Diagram generation rules:**
+1. **Group by table** using `subgraph TableName["Table Name (Max Depth: X)"]`
+2. **Direction**: Use `flowchart BT` (bottom to top) so basic columns are at bottom
+3. **Node labels**: Include column name, type, and depth for computed columns
+4. **Arrows**: Basic → Computed (dependency direction)
+5. **Color coding**:
+   - Green (`#90EE90`) for basic columns
+   - Yellow (`#FFD700`) for warning depth (4-5)
+   - Red (`#FF6B6B`) for critical depth (6+)
+
+**Example from real audit:**
+```mermaid
+flowchart BT
+    subgraph Users["Users Table (Max Depth: 7)"]
+        Email["Email<br/>(Basic)"]
+        ClaimsRel["Claims relation<br/>(Relation)<br/>depth: 5"]
+        ClaimsRD["Claims RD<br/>(Rollup)<br/>depth: 6"]
+        ClaimsSpec["Claims RD specific<br/>(Rollup)<br/>depth: 7"]
+
+        Email --> ClaimsRel
+        ClaimsRel --> ClaimsRD
+        ClaimsRD --> ClaimsSpec
+    end
+
+    style Email fill:#90EE90
+    style ClaimsRD fill:#FF6B6B
+    style ClaimsSpec fill:#FF6B6B
+```
+
+**Focus on problematic chains**: You don't need to diagram every column. Focus on:
+- Tables with Max Depth 4+
+- The specific chains that are deepest
+- Tables with most dependencies
+
+---
+
+### Step 9: Compile and Return Data
 
 Package all extracted data into structured format.
 

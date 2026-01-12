@@ -65,24 +65,33 @@ Tasks table:
 
 **Detection Method**:
 
-⚠️ **IMPORTANT**: The Glide API does NOT expose computed columns. You MUST inspect columns via the browser Data Editor.
+### ⭐ Primary: Dev Tools Plugin (Recommended)
 
-**Step 1: Identify computed columns in Data Editor**
+The Dev Tools plugin provides instant depth analysis:
+
+1. **Open Dev Tools** (button in top-right toolbar)
+2. **Check Overview**: Look at **"Max Depth"** - this shows the deepest chain in the entire app
+3. **Click 🔍 Column Dependencies**
+4. **Use Min Depth filter**: Set to 4 to see only problematic columns
+5. **Expand tables**: Each computed column shows **"Total depth: X"**
+
+**Example from Dev Tools:**
+```
+Users – 31 dependencies | Total columns: 45 (15 Query • 1 Lookup • 16 Other computed • 13 Basic)
+  ▶ Claims RD specific (PqUmA) | Rollup | Uses 2 columns | Total depth: 7 ← CRITICAL
+  ▶ RVP / Claims by RD rollup (f34ST) | Rollup | Uses 2 columns | Total depth: 7 ← CRITICAL
+  ▶ Mapping / RM (BvhCz) | Text Slice | Uses 2 columns | Total depth: 6 ← CRITICAL
+```
+
+### Fallback: Manual Browser Inspection
+
+If Dev Tools unavailable, inspect columns manually in Data Editor:
+
 1. Navigate to the table in the Data Editor
 2. Look at column headers - computed columns show formula icons (fx, Σ, →, etc.)
 3. Click on each computed column to see its configuration panel
-
-**Step 2: Trace dependencies for each computed column**
-1. In the column's configuration panel, look at which columns it references
-2. If it references another computed column, note the dependency
-3. Click on that referenced computed column to see what IT references
-4. Continue until you reach basic columns (no more computed dependencies)
-5. Count the total layers
-
-**Step 3: Build column dependency graph**
-1. Create a mental or written map: Column A → Column B → Column C → Basic Column
-2. Count depth from each computed column to its root basic columns
-3. Flag chains exceeding thresholds (4+ = warning, 6+ = critical)
+4. Trace dependencies by clicking through referenced columns
+5. Count the total layers until you reach basic columns
 
 **Example browser inspection flow**:
 ```
@@ -142,7 +151,15 @@ Other data accessible via:
 
 **Detection Method**:
 
-⚠️ **Browser inspection required** - Relations are NOT exposed in the API.
+### ⭐ Primary: Dev Tools Plugin (Recommended)
+
+1. **Open Dev Tools** → **🔍 Column Dependencies**
+2. **Filter by type**: Select "Relation" from the dropdown
+3. **Review table summaries**: Each table shows relation count in the breakdown
+   - Example: `Users – 31 dependencies | Total columns: 45 (...4 Relation...)`
+4. Flag tables with 5+ relations (warning) or 8+ relations (critical)
+
+### Fallback: Manual Browser Inspection
 
 1. Navigate to table in Data Editor
 2. Look for columns with the **link icon** (🔗) in the column header
@@ -196,7 +213,16 @@ Result: Each project shows only its own task count
 
 **Detection Method**:
 
-⚠️ **Browser inspection required** - Rollup configuration is NOT exposed in the API.
+### ⭐ Primary: Dev Tools Plugin (Recommended)
+
+1. **Open Dev Tools** → **🔍 Column Dependencies**
+2. **Filter by type**: Select "Rollup" from the dropdown
+3. **Expand rollup columns**: Click to see what they depend on
+   - Good: Rollup depends on a Relation column
+   - Bad: Rollup depends directly on basic columns (may indicate table source)
+4. For critical verification, click "Go to Column" to inspect the full config
+
+### Fallback: Manual Browser Inspection
 
 1. Navigate to table in Data Editor
 2. Look for columns with the **Σ (sigma) icon** - these are rollups
@@ -263,7 +289,14 @@ Combined approach:
 
 **Detection Method**:
 
-⚠️ **Browser inspection required** - AI columns are NOT exposed in the API.
+### ⭐ Primary: Dev Tools Plugin
+
+Dev Tools Column Dependencies can help identify AI columns by filtering:
+1. **Open Dev Tools** → **🔍 Column Dependencies**
+2. Look for AI-related column types in the table breakdowns
+3. Note: AI columns may show as "Other computed" in the summary
+
+### Fallback: Manual Browser Inspection
 
 1. Navigate to table in Data Editor
 2. Look for columns with the **sparkle/AI icon** (✨) in the column header
@@ -323,7 +356,15 @@ Result: 1 relation lookup, 3 instant value retrievals
 
 **Detection Method**:
 
-⚠️ **Browser inspection required** - Query columns are NOT exposed in the API.
+### ⭐ Primary: Dev Tools Plugin (Recommended)
+
+1. **Open Dev Tools** → **🔍 Column Dependencies**
+2. **Filter by type**: Select "Query" from the dropdown
+3. **Review table summaries**: Query columns are explicitly counted
+   - Example: `Repair Request Back Fill – 20 dependencies | Total columns: 50 (7 Query • ...)`
+4. Flag tables with 2+ Query columns (warning)
+
+### Fallback: Manual Browser Inspection
 
 1. Navigate to table in Data Editor
 2. Look for columns marked as "Query" or "Lookup query" type
@@ -373,6 +414,18 @@ Growth rate: 500 rows/week
 5. **Data cleanup workflows** - Scheduled deletion of obsolete records
 
 **Detection Method**:
+
+### ⭐ Primary: Dev Tools Plugin (Recommended)
+
+1. **Open Dev Tools** → **📊 Table Row Counts**
+2. View the **Summary section** for total rows by table type
+3. Review each table's row count in the list
+4. Compare to plan limits (check Settings → Team for plan info)
+5. **Export to CSV** for documentation
+6. Flag tables at 80%+ (warning) or 95%+ (critical) of limits
+
+### Fallback: API Method
+
 1. Get row count per table via API
 2. Compare to plan limits
 3. Calculate utilization percentage
