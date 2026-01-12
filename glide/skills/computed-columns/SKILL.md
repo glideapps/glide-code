@@ -229,9 +229,40 @@ Example: Order Status with Emoji
 
 Each column does one thing, and they build on each other.
 
+## Big Table Limitations
+
+When using **Big Tables** (not native Glide Tables), computed columns have limitations for filtering, sorting, and rollups.
+
+**Supported for filtering/sorting/rollups in Big Tables:**
+- Math columns
+- If-Then-Else columns
+- Lookup columns (single relation, basic columns only)
+- Template columns (static template string only)
+
+**NOT supported for filtering/sorting/rollups in Big Tables:**
+- Rollup columns
+- Multi-relation columns
+- Query columns
+- Plugin-based columns
+
+**Lookup requirements in Big Tables:**
+- Single relation only (not multi-relation)
+- Relation column must be basic (non-computed)
+- Target table must be a Big Table
+- Target column must be basic (non-computed)
+- Target column cannot be user-specific
+
+**Template requirements in Big Tables:**
+- Template string must be constant (not computed)
+
+**Rollup/Lookup row limit:** Maximum 100 matching rows in Big Tables.
+
+See the `data-modeling` skill for full Big Table documentation.
+
 ## Tips
 
 - **Name columns clearly** - they become variables in other calculations
 - **Use the type filter** - faster than scrolling through menus
 - **Chain simple columns** - easier to debug than one complex column
 - **Test with sample data** - verify calculations work before adding more
+- **Consider Big Table limits** - if using Big Tables, check column type compatibility

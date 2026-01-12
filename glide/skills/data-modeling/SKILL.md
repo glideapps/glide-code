@@ -304,15 +304,57 @@ Reference any column by wrapping its name in curly braces.
 
 **Native Tables (Glide Tables)**
 - Built into every app
-- Good for small-medium data
+- Good for small-medium data (up to 25,000 rows)
 - Full computed column support
 - Cannot be shared between apps
 
 **Big Tables**
 - Separate from apps (team-level)
-- Handles large datasets
+- Handles large datasets (up to 10 million rows)
 - Required for API v2 access
 - **Can be shared across multiple apps**
+
+### Big Table Computed Column Limitations
+
+Big Tables have different behavior for computed columns compared to native Glide Tables. These limitations apply when **filtering, sorting, or creating rollups** on computed columns.
+
+**CAN be filtered/sorted/rolled up in Big Tables:**
+| Column Type | Requirements |
+|-------------|--------------|
+| **Math** | Standard arithmetic operations |
+| **If-Then-Else** | Conditional logic |
+| **Lookup** | Single relation only (see requirements below) |
+| **Template** | Static template only (see requirements below) |
+
+**CANNOT be filtered/sorted/rolled up in Big Tables:**
+| Column Type | Notes |
+|-------------|-------|
+| **Rollup** | Cannot filter/sort by rollup values |
+| **Multi-relation** | Only single relations supported |
+| **Query** | Not supported for filtering |
+| **Plugin columns** | External integrations not supported |
+
+**Lookup column requirements in Big Tables:**
+- Must use a **single relation** (not multi-relation)
+- The relation column must be a basic (non-computed) column
+- Target table must also be a Big Table
+- Target column must be a basic (non-computed) column
+- Target column cannot be user-specific
+
+**Template column requirements in Big Tables:**
+- Template string must be **static** (constant text)
+- Dynamic templates (computed template strings) not supported
+
+**Other Big Table limits:**
+| Limit | Value |
+|-------|-------|
+| Maximum rows | 10,000,000 |
+| Rollup/Lookup matching rows | 100 max |
+| Cannot be User Profile table | Use native Glide Table for users |
+
+These limitations exist because Big Tables use SQL (AlloyDB) for queries, and computed columns must be translatable to SQL expressions.
+
+For more details: [Big Tables documentation](https://www.glideapps.com/docs/big-tables)
 
 ## Sharing Data Between Apps (Big Tables)
 

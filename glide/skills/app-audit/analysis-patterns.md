@@ -211,6 +211,48 @@ These are the only documented thresholds from Glide:
 
 ---
 
+### Big Table Computed Column Filtering
+
+**What it is**: Attempting to filter/sort by computed column types not supported in Big Tables.
+
+**Background**: Big Tables use SQL (AlloyDB) for queries. Only computed columns that can be translated to SQL expressions work for filtering/sorting/rollups.
+
+**Supported for filtering/sorting/rollups in Big Tables:**
+- Math columns
+- If-Then-Else columns
+- Lookup columns (with restrictions - see below)
+- Template columns (static template only)
+
+**NOT supported for filtering/sorting/rollups in Big Tables:**
+- Rollup columns
+- Multi-relation columns
+- Query columns
+- Plugin-based computed columns
+
+**Detection**:
+- Identify Big Tables in the app
+- Check if filters/sorts use unsupported computed column types
+- Check collection configurations targeting Big Tables
+
+**Lookup restrictions in Big Tables:**
+- Must use a single relation (not multi-relation)
+- The relation column must be a basic (non-computed) column
+- Target table must also be a Big Table
+- Target column must be a basic (non-computed) column
+- Target column cannot be user-specific
+
+**Template restrictions in Big Tables:**
+- Template string must be static (constant text)
+- Dynamic templates (where the template itself is computed) not supported
+
+**Fix**:
+- For filtering by Rollup values: Pre-calculate and store in basic column via workflow
+- For multi-relation filtering: Restructure to use single relation or native Glide Tables
+- For Query column filtering: Consider using native Glide Tables for that data
+- For complex filters: Move logic to basic columns updated by workflows
+
+---
+
 ## Layout Considerations
 
 ### Heavy First Screen

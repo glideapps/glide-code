@@ -39,6 +39,24 @@ These thresholds come directly from [Glide documentation](https://www.glideapps.
 | **Collection items visible** | 24 recommended | [Build for Speed](https://www.glideapps.com/blog/build-speed-and-scale) |
 | **Image dimensions** | 1,500px max | [Build for Speed](https://www.glideapps.com/blog/build-speed-and-scale) |
 
+### Big Table Computed Column Limits
+
+Big Tables use SQL (AlloyDB) for queries. Only certain computed columns can be filtered/sorted:
+
+**Supported for filtering/sorting in Big Tables:**
+- Math columns
+- If-Then-Else columns
+- Lookup columns (single relation, basic columns only)
+- Template columns (static template only)
+
+**NOT supported for filtering/sorting in Big Tables:**
+- Rollup columns
+- Multi-relation columns
+- Query columns
+- Plugin-based columns
+
+See [analysis-patterns.md](analysis-patterns.md) for detailed requirements.
+
 ## What It Audits
 
 ### Data Layer Analysis

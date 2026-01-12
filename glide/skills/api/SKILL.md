@@ -19,6 +19,9 @@ description: |
 - **Big Tables Only**: API v2 only works with Glide Big Tables, not native app tables
 - **Team Scope**: API operates at team level, not app level
 - **Quota Costs**: Read/write operations consume updates from your plan
+- **Row Limits**: Big Tables support up to 10 million rows
+- **Aggregation Limits**: Rollups/Lookups limited to 100 matching rows in Big Tables
+- **Computed Column Limits**: Some computed column types can't be filtered/sorted (see below)
 
 ## Getting Your API Token
 
@@ -268,6 +271,32 @@ If the version has changed, you'll get HTTP 412 Precondition Failed.
 
 Additional updates beyond quota: $0.02 each
 
+## Big Table Computed Column Limits
+
+When querying Big Tables, not all computed columns can be used for filtering or sorting.
+
+**Supported for filtering/sorting:**
+- Math columns
+- If-Then-Else columns
+- Lookup columns (single relation, basic columns only)
+- Template columns (static template only)
+
+**NOT supported for filtering/sorting:**
+- Rollup columns
+- Multi-relation columns
+- Query columns
+- Plugin-based columns
+
+**Lookup requirements:**
+- Must use single relation (not multi-relation)
+- Relation column must be basic (non-computed)
+- Target table must be a Big Table
+- Target column must be basic and not user-specific
+
+**Aggregation limit:** Rollups/Lookups return max 100 matching rows.
+
+See the `data-modeling` skill for full Big Table documentation.
+
 ## Best Practices
 
 1. **Use Big Tables** for API access - native tables aren't supported
@@ -276,6 +305,7 @@ Additional updates beyond quota: $0.02 each
 4. **Cache tokens** - Don't request new tokens repeatedly
 5. **Handle errors** - Check for 4xx/5xx responses
 6. **Respect rate limits** - Don't hammer the API
+7. **Check computed column support** - Not all computed columns work with filters
 
 ## Common Patterns
 
