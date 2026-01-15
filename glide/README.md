@@ -47,6 +47,7 @@ Your login will be remembered for future sessions.
 |---------|-------------|
 | `/glide` | Build apps - guided setup, choose new/existing app, store API key, begin building |
 | `/ask` | Expert advisor - ask about viability, features, get data/screen/workflow plans |
+| `/explain-feature` | Deep dive into specific Glide features - computed columns, workflows, components, etc. |
 | `/tip` | Provide expert guidance when stuck - plugin learns and updates its skills |
 
 ## Skills
