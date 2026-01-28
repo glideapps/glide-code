@@ -62,6 +62,7 @@ Your login will be remembered for future sessions.
 | `api` | Using Glide API v2 for data operations |
 | `app-sharing` | Privacy settings, authentication, publishing, user access |
 | `workflows` | Automation, triggers, loops, conditions, API integrations |
+| `explain-feature` | Deep dive explanations of specific Glide features with examples and best practices |
 | `learnings-log` | Historical record of expert tips integrated into plugin skills |
 
 ## Agents
