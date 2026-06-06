@@ -147,6 +147,13 @@ Shows:
 - `https://go.glideapps.com/app/abc123def456`
 - `go.glideapps.com/app/abc123def456`
 - `abc123def456` (just the App ID)
+- `https://go.glideapps.com/support/8cfc3aa0-fed1-475e-a15d-ea8199d17d7d` (**support mode** — read-only session)
+
+**About support-mode URLs:** The trailing value is a **support-session UUID**,
+NOT an App ID. It opens the app in a read-only support session where edits and
+data saving are disabled. You cannot reconstruct the `/app/{appId}/data` URL
+from the UUID — instead, navigate to the support URL as-is and read the real
+App ID from the loaded app afterward (see Step 2).
 
 ## Output
 
@@ -207,36 +214,57 @@ Some columns have human-readable IDs (like `"Client Name"`) while others have au
 
 ### Step 1: Parse App URL
 
-Extract App ID from the provided URL.
+Determine whether the input is a standard app URL/ID or a **support-mode URL**,
+then extract the right target.
 
 **Regex patterns**:
 ```javascript
-// Full URL
-const pattern1 = /go\.glideapps\.com\/app\/([a-zA-Z0-9]+)/;
+// Standard full app URL
+const appPattern = /go\.glideapps\.com\/app\/([a-zA-Z0-9]+)/;
 
-// If just ID provided
-const pattern2 = /^[a-zA-Z0-9]{12,}$/;
+// Support-mode URL: trailing segment is a UUID (hyphens allowed), NOT an App ID
+const supportPattern = /go\.glideapps\.com\/support\/([a-zA-Z0-9-]+)/;
+
+// Just an ID provided
+const idPattern = /^[a-zA-Z0-9]{12,}$/;
 ```
 
 **Extraction**:
 ```javascript
-function extractAppId(input) {
-  // Try full URL pattern
-  const match1 = input.match(/go\.glideapps\.com\/app\/([a-zA-Z0-9]+)/);
-  if (match1) return match1[1];
+function parseAuditTarget(input) {
+  // Support-mode URL — read-only session. Navigate to it as-is; App ID
+  // is unknown until the app loads.
+  const supportMatch = input.match(/go\.glideapps\.com\/support\/([a-zA-Z0-9-]+)/);
+  if (supportMatch) {
+    return {
+      supportMode: true,
+      supportSessionId: supportMatch[1],
+      navigateUrl: input.startsWith("http") ? input : `https://${input}`,
+      appId: null  // resolved after navigation (see Step 2)
+    };
+  }
 
-  // Try just ID pattern
-  if (/^[a-zA-Z0-9]{12,}$/.test(input)) return input;
+  // Standard full app URL
+  const appMatch = input.match(/go\.glideapps\.com\/app\/([a-zA-Z0-9]+)/);
+  if (appMatch) {
+    return { supportMode: false, appId: appMatch[1] };
+  }
+
+  // Just an App ID
+  if (/^[a-zA-Z0-9]{12,}$/.test(input)) {
+    return { supportMode: false, appId: input };
+  }
 
   // Invalid format
-  throw new Error("Invalid Glide app URL or ID");
+  throw new Error("Invalid Glide app URL, App ID, or support URL");
 }
 
-const appId = extractAppId(userInput);
+const target = parseAuditTarget(userInput);
 ```
 
 **Validation**:
-- App ID should be 12+ alphanumeric characters
+- Standard App ID should be 12+ alphanumeric characters
+- Support-session UUID looks like `8cfc3aa0-fed1-475e-a15d-ea8199d17d7d`
 - If extraction fails, report error to user
 
 ---
@@ -244,6 +272,8 @@ const appId = extractAppId(userInput);
 ### Step 2: Navigate to App
 
 Use browser automation to open the app.
+
+**Standard mode** (`target.supportMode === false`):
 
 **Target URL**:
 ```
@@ -256,6 +286,25 @@ https://go.glideapps.com/app/{appId}/data
 2. WAIT for page load (selector: Data Editor UI elements)
 3. VERIFY login status (if logged out, prompt user to log in)
 ```
+
+**Support mode** (`target.supportMode === true`):
+
+Navigate to the support URL **exactly as provided** — this is what opens the
+read-only support session. Do NOT try to build an `/app/{id}/data` URL; the
+UUID is not an App ID.
+
+**Browser commands**:
+```
+1. NAVIGATE to target.navigateUrl (the full /support/{uuid} URL)
+2. WAIT for the app/Data Editor to load in read-only support mode
+3. READ the real App ID from the resulting URL or page
+   (after load, the URL typically resolves to /app/{appId}/...)
+   → store it as target.appId for API calls and reporting
+4. Optionally open the Data Editor tab if not already on it
+```
+
+**Note:** Support mode is inherently read-only, which reinforces the audit's
+read-only guarantee — edits, saves, and data changes are disabled by Glide.
 
 **Expected state**:
 - Data Editor is loaded

@@ -1,7 +1,7 @@
 ---
 name: app-audit
 description: Audit Glide app for performance issues - analyze data structure and layout for bottlenecks
-argument-hint: [glide-app-url]
+argument-hint: [glide-app-url-or-support-url]
 ---
 
 # Glide App Performance Audit
@@ -49,7 +49,11 @@ Use these documented thresholds from Glide:
 ## Workflow
 
 ### Phase 1: Connect to App
-1. Parse app URL to extract App ID
+1. Parse app URL to extract App ID. Two URL forms are supported:
+   - **Standard:** `https://go.glideapps.com/app/{appId}` → extract the App ID directly
+   - **Support mode:** `https://go.glideapps.com/support/{uuid}` → the trailing
+     value is a read-only support-session UUID, NOT an App ID. Navigate to the
+     support URL as-is, then read the real App ID from the loaded app.
 2. Navigate to app Data Editor
 3. Extract API token via "Show API" panel
 
