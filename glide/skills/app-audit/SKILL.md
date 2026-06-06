@@ -4,7 +4,8 @@ description: |
   Audit Glide apps for performance issues and optimization opportunities.
   Use when analyzing app performance, identifying bottlenecks in data structure or layout,
   or providing recommendations for improving app speed and user experience.
-  Automatically triggered when user provides a Glide app URL for audit.
+  Automatically triggered when user provides a Glide app URL for audit, including
+  read-only support-mode URLs of the form https://go.glideapps.com/support/{uuid}.
 ---
 
 # Glide App Audit
@@ -93,8 +94,22 @@ See [analysis-patterns.md](analysis-patterns.md) for detailed requirements.
 /app-audit https://go.glideapps.com/app/abc123
 ```
 
+### Support Mode URL
+
+The audit also accepts a **support-mode URL**, which opens the app in a
+read-only support session (no edits or data saving possible):
+
+```
+/app-audit https://go.glideapps.com/support/8cfc3aa0-fed1-475e-a15d-ea8199d17d7d
+```
+
+The trailing value is a **support-session UUID**, not an App ID. For these
+URLs the audit navigates to the support URL directly (this is what grants
+read-only mode), then reads the real App ID from the loaded app. This pairs
+naturally with the audit's read-only guarantee.
+
 The audit will:
-1. Extract app ID from URL
+1. Extract app ID from URL (or open the support session and read it from the loaded app)
 2. Connect to app and retrieve API token
 3. Run Performance Analysis to find slow columns
 4. Analyze data structure via API + browser
