@@ -6,6 +6,8 @@ description: |
   or providing recommendations for improving app speed and user experience.
   Automatically triggered when user provides a Glide app URL for audit, including
   read-only support-mode URLs of the form https://go.glideapps.com/support/{uuid}.
+  Can also produce an optional plain-language, customer-facing version of the report
+  on request, for sharing directly with the customer who reported the issue.
 ---
 
 # Glide App Audit
@@ -125,6 +127,11 @@ A report identifying:
 - **Computed column dependencies** - Chains that may cause cascading delays
 - **Layout issues** - Collections, images, screen weight
 
+**Optional customer-facing report:** After the technical report, you can also get a
+plain-language version to share directly with the customer (see Phase 5b). If the
+customer reported specific symptoms (e.g. "the second tab is slow," "the list is blank
+until I reopen"), provide them and the customer report will lead with those.
+
 ## Audit Workflow
 
 ### Phase 1: Connect to App
@@ -167,6 +174,20 @@ A report identifying:
 3. Map computed column dependencies
 4. Note Query → Relation optimization opportunities
 5. Include recommendations based on Glide best practices
+
+### Phase 5b (optional): Customer-Facing Report
+After delivering the technical report, **offer** a plain-language version the operator
+can share directly with the customer — and produce one whenever it's requested in
+natural language ("a customer-facing / shareable / plain-language report").
+
+- It is **additive**: it never replaces the technical report, and it uses the same
+  findings (no re-analysis).
+- It **omits** scores, severity labels, jargon, and any mention of internal-only tools.
+- If the customer reported symptoms, capture them and the report leads with them
+  (symptom → likely cause → steps); otherwise it organizes by **Speed / Complexity /
+  Reliability**.
+- Follow [procedures/generate-customer-report.md](procedures/generate-customer-report.md),
+  which applies [customer-report-guideline.md](customer-report-guideline.md).
 
 ## Known Performance Issues
 
@@ -222,6 +243,8 @@ This helps visualize:
 **Plugin procedures:**
 - `procedures/fetch-app-data.md` - Data extraction
 - `procedures/analyze-layout.md` - UI inspection
+- `procedures/generate-customer-report.md` - Optional plain-language customer report
+- `customer-report-guideline.md` - How to translate findings for a customer audience
 
 ## Limitations
 
