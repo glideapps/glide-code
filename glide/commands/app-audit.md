@@ -95,6 +95,29 @@ Include:
 4. **Dependency diagram** - Mermaid showing computed column chains
 5. **Recommendations** - Based on Glide best practices
 
+### Phase 5b: Customer-Facing Report (optional)
+
+After delivering the technical report above, **offer** a plain-language version that can
+be shared directly with the customer:
+
+> "Want a customer-facing version of this you can send to the customer?"
+
+Also produce one whenever it's requested in natural language (a "customer-facing,"
+"shareable," or "plain-language" report). It is **additive** — never a replacement for the
+technical report, and built from the same findings (no re-analysis).
+
+- **Capture reported symptoms.** If the customer reported specific symptoms (e.g. "the
+  second tab is slow," "the list is blank until I reopen the app") — whether given in
+  `$ARGUMENTS` or in conversation — pass them through as `reportedSymptoms` so the report
+  leads with them (symptom → likely cause → steps). If a customer report is requested with
+  no symptoms given, ask once: *"Any specific symptoms the customer reported? Otherwise I'll
+  organize by Speed, Complexity, and Reliability."*
+- Follow `glide/skills/app-audit/procedures/generate-customer-report.md`, which applies
+  `glide/skills/app-audit/customer-report-guideline.md`.
+- **Omit** scores, severity labels, jargon, and any mention of internal-only tooling
+  (Dev Tools, the Performance Analysis tool, API tokens, support sessions). Keep the tone
+  tentative ("changes to try / should help").
+
 ## Dependency Diagram
 
 Generate a Mermaid diagram showing column relationships:
@@ -139,4 +162,5 @@ Generate a markdown report with:
 - Dependency diagram
 - Recommendations citing Glide documentation
 
-Display the report to the user after analysis is complete.
+Display the report to the user after analysis is complete, then offer the optional
+customer-facing report (Phase 5b).

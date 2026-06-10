@@ -2,5 +2,9 @@
 .DS_Store
 .glide/
 
-# Audit reports contain sensitive client data
+# Audit reports and screenshots contain sensitive client data
 audit-reports/
+# Root-level audit screenshots (e.g. captured during /app-audit)
+/*.jpeg
+/*.jpg
+/*.png
