@@ -74,6 +74,20 @@ curl -X GET "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Content-Type: application/json"
 ```
 
+**Results are paged.** The response is `{"data": [...], "continuation": "..."}`. If `continuation` is present, there are more rows: call again with `?continuation=<token>` until it is absent. This happens with or without `limit`, and a page can hold fewer rows than `limit`. Reading only the first page gives a partial table with no error, so a sync built on it will think rows are missing and add duplicates.
+
+```bash
+# Fetch every page
+URL="https://api.glideapps.com/tables/TABLE_ID/rows"
+CONT=""
+while :; do
+  RESP=$(curl -s "$URL${CONT:+?continuation=$CONT}" -H "Authorization: Bearer YOUR_API_TOKEN")
+  echo "$RESP" | jq -c '.data[]'
+  CONT=$(echo "$RESP" | jq -r '.continuation // empty')
+  [ -z "$CONT" ] && break
+done
+```
+
 ### Example: Create Table
 
 Create a new Big Table with schema and initial data. See [official docs](https://apidocs.glideapps.com/api-reference/v2/tables/post-tables).
@@ -120,9 +134,13 @@ curl -X POST "https://api.glideapps.com/tables" \
 |------|-------------|
 | `string` | Text data |
 | `number` | Numeric values |
-| `dateTime` | ISO 8601 dates |
-| `uri` | URLs (images, links) |
 | `boolean` | True/false |
+| `dateTime` | ISO 8601 date and time |
+| `date`, `time`, `duration` | Date only, time only, duration |
+| `uri` | URLs |
+| `imageURI`, `audioURI` | Image or audio URLs |
+| `emailAddress`, `phoneNumber` | Email, phone |
+| `markdown`, `emoji`, `json` | Rich text, emoji, JSON |
 
 **Key Points:**
 - `appsToLink`: Array of app IDs to automatically link the table to
@@ -133,17 +151,21 @@ curl -X POST "https://api.glideapps.com/tables" \
 
 **Use column IDs (not display names) as keys.** Column IDs are defined in the schema when creating the table.
 
+**The body is a bare JSON array of rows**, not an object with a `rows` key. (Create Table takes `"rows": [...]` inside its body; Add Rows does not.) The only other accepted body is a stash reference, `{"$stashID": "..."}`.
+
 ```bash
 curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "rows": [
-      {"fullName": "Alice", "email": "alice@example.com"},
-      {"fullName": "Bob", "email": "bob@example.com"}
-    ]
-  }'
+  -d '[
+    {"fullName": "Alice", "email": "alice@example.com"},
+    {"fullName": "Bob", "email": "bob@example.com"}
+  ]'
 ```
+
+**Response (201):** `{"data": {"rowIDs": ["...", "..."]}}`, in the same order as the input rows.
+
+Inline rows are meant for small batches (a few hundred rows or less). For anything larger, or over 15MB, use stashing (below).
 
 ### Example: Update Row
 
@@ -163,6 +185,50 @@ curl -X DELETE "https://api.glideapps.com/tables/TABLE_ID/rows/ROW_ID" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
+Delete returns `200` whether the row was deleted or never existed, so a wrong row ID looks like success. If it matters, check afterwards with `GET /tables/{tableID}/rows/{rowID}` (expect `404 row_not_found`).
+
+### Large Imports: Stashing
+
+For big datasets, upload the rows in chunks to a stash, then commit the whole stash in one atomic call. Users never see a half-finished import, and updates are only charged at commit.
+
+```bash
+# 1. Upload chunks (500 to 1,000 rows each). The stash ID and serials are yours to choose.
+curl -X PUT "https://api.glideapps.com/stashes/20240501-import/1" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '[{"fullName": "Alice"}, {"fullName": "Bob"}]'
+
+curl -X PUT "https://api.glideapps.com/stashes/20240501-import/2" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '[{"fullName": "Carol"}]'
+
+# 2. Commit the stash to an existing table
+curl -X POST "https://api.glideapps.com/tables/TABLE_ID/rows" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"$stashID": "20240501-import"}'
+```
+
+- Stash IDs and serials: up to 256 characters, letters, numbers, `-` and `_`, starting with a letter or number. Integer serials sort numerically.
+- Stashes are deleted automatically within 48 hours.
+- Create Table takes `"rows": {"$stashID": "..."}` in its body instead of inline rows.
+- Approximate row limits per call: Create Table and Overwrite Table 8m, Add Rows 250k.
+
+See the [Bulk Import tutorial](https://apidocs.glideapps.com/api-reference/v2/tutorials/bulk-import).
+
+### Errors
+
+| Status | Meaning |
+|--------|---------|
+| `400` | Bad request (for example an invalid stash ID) |
+| `402` | `payment_required` |
+| `404` | Invalid API token (not 401), `table_not_found`, `table_not_big_table`, or `row_not_found` |
+| `412` | `precondition_failed`: `If-Match` version check failed |
+| `422` | Row data does not match the schema: `column_id_not_found`, `column_has_invalid_value` |
+
+Errors come back as `{"error": {"type": "...", "message": "..."}}`. On `422` no rows are written unless you pass `onSchemaError` to change that.
+
 ## @glideapps/tables Package
 
 ### Installation
@@ -178,7 +244,7 @@ import * as glide from "@glideapps/tables";
 
 const myTable = glide.table({
   token: "YOUR_API_TOKEN",
-  app: "APP_ID",           // Optional for Big Tables
+  app: "APP_ID",           // Required
   table: "TABLE_ID",
   columns: {
     name: { type: "string", name: "Name" },
@@ -208,12 +274,12 @@ const myTable = glide.table({
 // Get all rows
 const rows = await myTable.get();
 
-// With query parameters
-const filtered = await myTable.get({
-  where: { active: true },
-  limit: 10
-});
+// Query (Big Tables): pass a function that builds the query.
+// Column names are the keys from `columns` above.
+const filtered = await myTable.get(q => q.where("active", "=", true).limit(10));
 ```
+
+`get()` takes a row ID, a query function, or nothing. A plain object such as `{ where, limit }` is not supported and throws. With no argument it pages through the whole table for you.
 
 ### Add Rows
 
